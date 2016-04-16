@@ -9,80 +9,60 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import java.io.IOException;
 
-public class CameraOverlayActivity extends Activity implements SurfaceHolder.Callback{
+public class CameraOverlayActivity extends AppCompatActivity {
 
-    Camera camera;
-    SurfaceView surfaceView;
-    SurfaceHolder surfaceHolder;
-    boolean previewing=false;
-    LayoutInflater controlInflater=null;
+    private Camera mCamera = null;
+    private CameraView mCameraView = null;
+    private final static String LOG_HEADER = "piccal - CameraOverlay";
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
-    public void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_HEADER, "Camera Overlay Activity started.");
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        setContentView(R.layout.activity_main);
 
-        getWindow().setFormat(PixelFormat.UNKNOWN);
-        surfaceView=(SurfaceView)findViewById(R.id.camerapreview);
-        surfaceHolder=surfaceView.getHolder();
-        surfaceHolder.addCallback(this);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-        controlInflater=LayoutInflater.from(getBaseContext());
-        View viewControl=controlInflater.inflate(R.layout.control, null);
-        ViewGroup.LayoutParams layoutParamsControl = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT);
-        this.addContentView(viewControl,layoutParamsControl);
-
-    }
-
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder,int format,int width,
-                               int height){
-// TODO Auto-generated method stub
-        if(previewing){
-            camera.stopPreview();
-            previewing=false;
+        try{
+            mCamera = Camera.open();//you can use open(int) to use different cameras
+        } catch (Exception e){
+            Log.d("ERROR", "Failed to get camera: " + e.getMessage());
         }
 
-        if(camera!=null){
-            try{
-                camera.setPreviewDisplay(surfaceHolder);
-                camera.startPreview();
-                previewing=true;
-            }catch(IOException e){
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        if(mCamera != null) {
+            mCameraView = new CameraView(this, mCamera);//create a SurfaceView to show camera data
+            FrameLayout camera_view = (FrameLayout)findViewById(R.id.camera_view);
+            Log.d(LOG_HEADER, "mCameraView is : " + mCameraView.toString());
+            if(camera_view == null) {
+                Log.d(LOG_HEADER, "camera_view is null");
+            } else {
+                Log.d(LOG_HEADER, "camera_view is null : " + camera_view.toString());
             }
+            camera_view.addView(mCameraView);//add the SurfaceView to the layout
+            // the above line is where we get a NullPointerException
         }
+
+        //btn to close the application
+        Button imgClose = (Button)findViewById(R.id.camera_button);
+        imgClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                System.exit(0);
+                ;
+            }
+        });
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder){
-// TODO Auto-generated method stub
-        camera=Camera.open();
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder){
-// TODO Auto-generated method stub
-        camera.stopPreview();
-        camera.release();
-        camera=null;
-        previewing=false;
-    }
 
 }
