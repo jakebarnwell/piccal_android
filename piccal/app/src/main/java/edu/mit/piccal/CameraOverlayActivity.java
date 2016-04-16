@@ -29,10 +29,17 @@ public class CameraOverlayActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(LOG_HEADER, "Camera Overlay Activity started.");
+        Log.d(LOG_HEADER, "Camera Overlay Activity onCreate.");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(LOG_HEADER, "Camera Overlay Activity onStart.");
 
         try{
             mCamera = Camera.open();//you can use open(int) to use different cameras
