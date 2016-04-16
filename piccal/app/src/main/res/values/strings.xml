@@ -5,4 +5,5 @@
     <string name="take_photo">Take a Photo</string>
     <string name="upload_server">Upload</string>
     <string name="uploaded">Successfully uploaded</string>
+    <string name="title_activity_camera_overlay">CameraOverlayActivity</string>
 </resources>
