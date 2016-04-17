@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:text="Camera Button"
         android:id="@+id/camera_button"
+        android:onClick="onCameraButtonClick"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
