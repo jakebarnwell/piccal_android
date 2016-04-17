@@ -8,12 +8,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
+// Taken from https://github.com/commonsguy/cw-advandroid/tree/master/Camera/Preview
+
 public class CameraOverlayActivity extends Activity {
     private SurfaceView preview=null;
     private SurfaceHolder previewHolder=null;
     private Camera camera=null;
     private boolean inPreview=false;
     private boolean cameraConfigured=false;
+    private final static String LOG_HEADER = "piccal - CameraOverlay";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,11 +80,11 @@ public class CameraOverlayActivity extends Activity {
                 camera.setPreviewDisplay(previewHolder);
             }
             catch (Throwable t) {
-                Log.e("PreviewDemo-surfaceCallback",
+                Log.e(LOG_HEADER,
                         "Exception in setPreviewDisplay()", t);
-//                Toast
-//                        .makeText(PreviewDemo.this, t.getMessage(), Toast.LENGTH_LONG)
-//                        .show();
+                Toast
+                        .makeText(CameraOverlayActivity.this, t.getMessage(), Toast.LENGTH_LONG)
+                        .show();
             }
 
             if (!cameraConfigured) {
