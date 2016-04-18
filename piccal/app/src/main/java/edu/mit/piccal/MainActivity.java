@@ -1,7 +1,9 @@
 package edu.mit.piccal;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,7 +15,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -28,20 +29,84 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+
 public class MainActivity extends AppCompatActivity implements OnClickListener {
+    public static final String PACKAGE_NAME = "edu.mit.piccal";
+    public static final String DATA_PATH = Environment
+            .getExternalStorageDirectory().toString() + "/piccal/";
+
+    // You should have the trained data file in assets folder
+    // You can get them at:
+    // http://code.google.com/p/tesseract-ocr/downloads/list
+    public static final String LANG = "eng";
+
     private Button mTakePhoto;
     private ImageView mImageView;
     private static final String TAG = "upload";
     private final static String LOG_HEADER = "piccal - Main";
+    private TessBaseAPI baseApi = new TessBaseAPI();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
+
+        for (String path : paths) {
+            File dir = new File(path);
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    Log.v(LOG_HEADER, "ERROR: Creation of directory " + path + " on sdcard failed");
+                    return;
+                } else {
+                    Log.v(LOG_HEADER, "Created directory " + path + " on sdcard");
+                }
+            }
+
+        }
+
+        // lang.traineddata file with the app (in assets folder)
+        // You can get them at:
+        // http://code.google.com/p/tesseract-ocr/downloads/list
+        // This area needs work and optimization
+        if (!(new File(DATA_PATH + "tessdata/" + LANG + ".traineddata")).exists()) {
+            try {
+
+                AssetManager assetManager = getAssets();
+                InputStream in = assetManager.open("tessdata/" + LANG + ".traineddata");
+                //GZIPInputStream gin = new GZIPInputStream(in);
+                OutputStream out = new FileOutputStream(DATA_PATH
+                        + "tessdata/" + LANG + ".traineddata");
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                //while ((lenf = gin.read(buff)) > 0) {
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                //gin.close();
+                out.close();
+
+                Log.v(LOG_HEADER, "Copied " + LANG + " traineddata");
+            } catch (IOException e) {
+                Log.e(LOG_HEADER, "Was unable to copy " + LANG + " traineddata " + e.toString());
+            }
+        }
+
+        baseApi.setDebug(true);
+        Log.d(LOG_HEADER, DATA_PATH);
+        baseApi.init(DATA_PATH, LANG);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -278,6 +343,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         if (rotatedBMP != bitmap)
             bitmap.recycle();
+        
+        baseApi.setImage(rotatedBMP);
+        String recognizedText = baseApi.getUTF8Text();
+        Context context = getApplicationContext();
+        Toast.makeText(context, recognizedText, Toast.LENGTH_SHORT).show();
+        Log.d(LOG_HEADER, recognizedText);
+        //baseApi.end();
 
         mImageView.setImageBitmap(rotatedBMP);
 
