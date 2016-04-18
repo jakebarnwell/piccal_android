@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private Button mTakePhoto;
     private ImageView mImageView;
     private static final String TAG = "upload";
+    private final static String LOG_HEADER = "piccal - Main";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         mImageView = (ImageView) findViewById(R.id.imageview);
 
         mTakePhoto.setOnClickListener(this);
+    }
+
+    public void toCameraActivity(View view) {
+        Intent i = new Intent(this, CameraOverlayActivity.class);
+        Log.d(LOG_HEADER, "Intent created.");
+        startActivity(i);
+        Log.d(LOG_HEADER, "Activity started.");
     }
 
     @Override
