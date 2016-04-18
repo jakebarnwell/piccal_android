@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         if (rotatedBMP != bitmap)
             bitmap.recycle();
-        
+
         baseApi.setImage(rotatedBMP);
         String recognizedText = baseApi.getUTF8Text();
         Context context = getApplicationContext();
