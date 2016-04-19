@@ -43,7 +43,7 @@ public class CameraOverlayActivity extends Activity {
     private enum State {CAMERA_PREVIEW, IMAGE_REVIEW};
 
     // For OCR:
-    private TessBaseAPI baseApi = new TessBaseAPI();
+    private TessBaseAPI baseApi;
     public static final String PACKAGE_NAME = "edu.mit.piccal";
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/piccal/";
@@ -67,15 +67,19 @@ public class CameraOverlayActivity extends Activity {
 
         imview = (ImageView)findViewById(R.id.imageView);
 
-        // Stuff for OCR:
-        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
+        // Create base API for OCR
+        baseApi = initOCR(LANG, DATA_PATH);
+    }
+
+    private TessBaseAPI initOCR(String lang, String data_path) {
+        String[] paths = new String[] { data_path, data_path + "tessdata/" };
 
         for (String path : paths) {
             File dir = new File(path);
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
                     Log.v(LOG_HEADER, "ERROR: Creation of directory " + path + " on sdcard failed");
-                    return;
+                    return null;
                 } else {
                     Log.v(LOG_HEADER, "Created directory " + path + " on sdcard");
                 }
@@ -87,14 +91,14 @@ public class CameraOverlayActivity extends Activity {
         // You can get them at:
         // http://code.google.com/p/tesseract-ocr/downloads/list
         // This area needs work and optimization
-        if (!(new File(DATA_PATH + "tessdata/" + LANG + ".traineddata")).exists()) {
+        if (!(new File(data_path + "tessdata/" + lang + ".traineddata")).exists()) {
             try {
 
                 AssetManager assetManager = getAssets();
-                InputStream in = assetManager.open("tessdata/" + LANG + ".traineddata");
+                InputStream in = assetManager.open("tessdata/" + lang + ".traineddata");
                 //GZIPInputStream gin = new GZIPInputStream(in);
-                OutputStream out = new FileOutputStream(DATA_PATH
-                        + "tessdata/" + LANG + ".traineddata");
+                OutputStream out = new FileOutputStream(data_path
+                        + "tessdata/" + lang + ".traineddata");
 
                 // Transfer bytes from in to out
                 byte[] buf = new byte[1024];
@@ -107,15 +111,18 @@ public class CameraOverlayActivity extends Activity {
                 //gin.close();
                 out.close();
 
-                Log.v(LOG_HEADER, "Copied " + LANG + " traineddata");
+                Log.v(LOG_HEADER, "Copied " + lang + " traineddata");
             } catch (IOException e) {
-                Log.e(LOG_HEADER, "Was unable to copy " + LANG + " traineddata " + e.toString());
+                Log.e(LOG_HEADER, "Was unable to copy " + lang + " traineddata " + e.toString());
             }
         }
 
-        baseApi.setDebug(true);
-        Log.d(LOG_HEADER, DATA_PATH);
-        baseApi.init(DATA_PATH, LANG);
+        TessBaseAPI api = new TessBaseAPI();
+        api.setDebug(true);
+        Log.d(LOG_HEADER, data_path);
+        api.init(data_path, lang);
+
+        return api;
     }
 
     public void onClick_takePicture(View view) {
@@ -148,15 +155,19 @@ public class CameraOverlayActivity extends Activity {
                 imview.setImageBitmap(bitmap_image);
 
                 // Do OCR:
-                baseApi.setImage(bitmap_image);
-                String recognizedText = baseApi.getUTF8Text();
-                Context context = getApplicationContext();
-                Toast.makeText(context, recognizedText, Toast.LENGTH_SHORT).show();
-                Log.d(LOG_HEADER, recognizedText);
+                String extracted_text = extractTextFrom(bitmap_image, baseApi);
+                Toast.makeText(getApplicationContext(), extracted_text, Toast.LENGTH_SHORT).show();
                 //baseApi.end();
             }
         }
     };
+
+    private String extractTextFrom(Bitmap bmp, TessBaseAPI api) {
+        api.setImage(bmp);
+        String text = api.getUTF8Text();
+        Log.d(LOG_HEADER, "Recognized text: " + text);
+        return text;
+    }
 
     private Bitmap getBitmap(byte[] jpeg) {
         // Get the dimensions of the View
@@ -315,9 +326,9 @@ public class CameraOverlayActivity extends Activity {
     public void stopPreview() {
         if(inPreview) {
             camera.stopPreview();
+            camera.release();
         }
 
-        camera.release();
         camera = null;
         inPreview = false;
     }
