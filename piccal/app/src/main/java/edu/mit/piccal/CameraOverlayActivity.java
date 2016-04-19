@@ -26,11 +26,14 @@ import java.io.FileOutputStream;
 public class CameraOverlayActivity extends Activity {
     private SurfaceView preview = null;
     private ImageView imview = null;
+    private int imViewWidth, imViewHeight;
     private SurfaceHolder previewHolder = null;
     private Camera camera=null;
     private boolean inPreview=false;
     private boolean cameraConfigured=false;
     private final static String LOG_HEADER = "piccal - CameraOverlay";
+
+    private enum State {CAMERA_PREVIEW, IMAGE_REVIEW};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,30 +50,77 @@ public class CameraOverlayActivity extends Activity {
     }
 
     public void onClick_takePicture(View view) {
-//        if (inPreview) {
-//            camera.takePicture(null, null, photoCallback);
-//            inPreview=false;
-//        }
-//        findViewById(R.id.preview).setVisibility(View.VISIBLE);
-//        findViewById(R.id.imageView).setVisibility(View.GONE);
-
-        if(preview.getVisibility() == View.VISIBLE) {
-            hide(preview);
-            show(imview);
-        } else {
-            show(preview);
-            hide(imview);
+        if(inPreview) {
+            imViewWidth = preview.getWidth();
+            imViewHeight = preview.getHeight();
+            camera.takePicture(null, null, photoCallback2);
         }
+
     }
 
     Camera.PictureCallback photoCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-            Camera.Parameters cpm  = camera.getParameters();
             new SavePhotoTask().execute(data);
-            camera.startPreview();
-            inPreview=true;
+            startPreview();
         }
     };
+
+    Camera.PictureCallback photoCallback2 = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            // Start to save the photo
+            new SavePhotoTask().execute(data);
+
+            // Get bitmap file to load into ImageView
+            Bitmap bitmap_image = getBitmap(data);
+
+            // Stop camera preview
+            stopPreview();
+
+            // Now hide the camera preview, show the ImageView to view the taken image
+            if(preview.getVisibility() == View.VISIBLE) {
+                hide(preview);
+                show(imview);
+            }
+
+            if(bitmap_image != null) {
+                imview.setImageBitmap(bitmap_image);
+            }
+        }
+    };
+
+    private Bitmap getBitmap(byte[] jpeg) {
+        // Get the dimensions of the View
+        int targetW = imViewWidth;
+        int targetH = imViewHeight;
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+//            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor << 1;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(jpeg, 0, jpeg.length, bmOptions);
+
+        Matrix mtx = new Matrix();
+        mtx.postRotate(90);
+        // Rotating Bitmap
+        Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
+
+        if (rotatedBMP != bitmap) {
+            bitmap.recycle();
+        }
+
+        return rotatedBMP;
+    }
 
     private void show(View view) {
         if(view != null) {
@@ -99,38 +149,7 @@ public class CameraOverlayActivity extends Activity {
     class SavePhotoTask extends AsyncTask<byte[], String, String> {
         @Override
         protected String doInBackground(byte[]... jpeg) {
-            SurfaceView previewWindow = (SurfaceView)findViewById(R.id.preview);
-            stopPreview();
-//            showImageView();
-//            // Get the dimensions of the View
-//            int targetW = previewWindow.getWidth();
-//            int targetH = previewWindow.getHeight();
-//
-//            // Get the dimensions of the bitmap
-//            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//            bmOptions.inJustDecodeBounds = true;
-//            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-//            int photoW = bmOptions.outWidth;
-//            int photoH = bmOptions.outHeight;
-//
-//            // Determine how much to scale down the image
-//            int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-//
-//            // Decode the image file into a Bitmap sized to fill the View
-//            bmOptions.inJustDecodeBounds = false;
-//            bmOptions.inSampleSize = scaleFactor << 1;
-//            bmOptions.inPurgeable = true;
-//
-//            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-//
-//            Matrix mtx = new Matrix();
-//            mtx.postRotate(90);
-//            // Rotating Bitmap
-//            Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
-//
-//            if (rotatedBMP != bitmap) {
-//                bitmap.recycle();
-//            }
+
 
 
             /* ------------------------- */
@@ -173,13 +192,13 @@ public class CameraOverlayActivity extends Activity {
     }
 
     public void stopPreview() {
-        if (inPreview) {
+        if(inPreview) {
             camera.stopPreview();
         }
 
         camera.release();
-        camera=null;
-        inPreview=false;
+        camera = null;
+        inPreview = false;
     }
 
     private Camera.Size getBestPreviewSize(int width, int height,

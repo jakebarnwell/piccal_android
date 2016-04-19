@@ -18,13 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/imageView"
-        android:src="#c36868" />
+        android:src="#c36868"
+        android:visibility="gone"
+        />
 
     <android.view.SurfaceView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
         />
 
 
