@@ -2,6 +2,9 @@ package edu.mit.piccal;
 
 import android.app.Activity;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -20,8 +24,9 @@ import java.io.FileOutputStream;
 //  and https://github.com/commonsguy/cw-advandroid/tree/master/Camera/Picture
 
 public class CameraOverlayActivity extends Activity {
-    private SurfaceView preview=null;
-    private SurfaceHolder previewHolder=null;
+    private SurfaceView preview = null;
+    private ImageView imview = null;
+    private SurfaceHolder previewHolder = null;
     private Camera camera=null;
     private boolean inPreview=false;
     private boolean cameraConfigured=false;
@@ -37,26 +42,99 @@ public class CameraOverlayActivity extends Activity {
         previewHolder=preview.getHolder();
         previewHolder.addCallback(surfaceCallback);
         previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        imview = (ImageView)findViewById(R.id.imageView);
     }
 
     public void onClick_takePicture(View view) {
-        if (inPreview) {
-            camera.takePicture(null, null, photoCallback);
-            inPreview=false;
+//        if (inPreview) {
+//            camera.takePicture(null, null, photoCallback);
+//            inPreview=false;
+//        }
+//        findViewById(R.id.preview).setVisibility(View.VISIBLE);
+//        findViewById(R.id.imageView).setVisibility(View.GONE);
+
+        if(preview.getVisibility() == View.VISIBLE) {
+            hide(preview);
+            show(imview);
+        } else {
+            show(preview);
+            hide(imview);
         }
     }
 
     Camera.PictureCallback photoCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
+            Camera.Parameters cpm  = camera.getParameters();
             new SavePhotoTask().execute(data);
             camera.startPreview();
             inPreview=true;
         }
     };
 
+    private void show(View view) {
+        if(view != null) {
+            try {
+                if(view.getVisibility() != View.VISIBLE) {
+                    view.setVisibility(View.VISIBLE);
+                }
+            } catch(Exception e) {
+                Log.e(LOG_HEADER, "Error getting visibility of view object: " + e.toString());
+            }
+        }
+    }
+
+    private void hide(View view) {
+        if(view != null) {
+            try {
+                if(view.getVisibility() == View.VISIBLE) {
+                    view.setVisibility(View.GONE);
+                }
+            } catch(Exception e) {
+                Log.e(LOG_HEADER, "Error getting visibility of view object: " + e.toString());
+            }
+        }
+    }
+
     class SavePhotoTask extends AsyncTask<byte[], String, String> {
         @Override
         protected String doInBackground(byte[]... jpeg) {
+            SurfaceView previewWindow = (SurfaceView)findViewById(R.id.preview);
+            stopPreview();
+//            showImageView();
+//            // Get the dimensions of the View
+//            int targetW = previewWindow.getWidth();
+//            int targetH = previewWindow.getHeight();
+//
+//            // Get the dimensions of the bitmap
+//            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//            bmOptions.inJustDecodeBounds = true;
+//            BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//            int photoW = bmOptions.outWidth;
+//            int photoH = bmOptions.outHeight;
+//
+//            // Determine how much to scale down the image
+//            int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+//
+//            // Decode the image file into a Bitmap sized to fill the View
+//            bmOptions.inJustDecodeBounds = false;
+//            bmOptions.inSampleSize = scaleFactor << 1;
+//            bmOptions.inPurgeable = true;
+//
+//            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//
+//            Matrix mtx = new Matrix();
+//            mtx.postRotate(90);
+//            // Rotating Bitmap
+//            Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
+//
+//            if (rotatedBMP != bitmap) {
+//                bitmap.recycle();
+//            }
+
+
+            /* ------------------------- */
+
             File photo=
                     new File(Environment.getExternalStorageDirectory(),
                             "photo.jpg");
@@ -89,6 +167,12 @@ public class CameraOverlayActivity extends Activity {
 
     @Override
     public void onPause() {
+        stopPreview();
+
+        super.onPause();
+    }
+
+    public void stopPreview() {
         if (inPreview) {
             camera.stopPreview();
         }
@@ -96,8 +180,6 @@ public class CameraOverlayActivity extends Activity {
         camera.release();
         camera=null;
         inPreview=false;
-
-        super.onPause();
     }
 
     private Camera.Size getBestPreviewSize(int width, int height,
