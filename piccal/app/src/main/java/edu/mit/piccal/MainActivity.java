@@ -353,11 +353,11 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         mImageView.setImageBitmap(rotatedBMP);
 
-        try {
-            sendPhoto(rotatedBMP);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            sendPhoto(rotatedBMP);
+//        } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
 }
