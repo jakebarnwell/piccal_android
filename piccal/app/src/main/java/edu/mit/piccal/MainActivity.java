@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         String recognizedText = baseApi.getUTF8Text();
         baseApi.clear();
         Context context = getApplicationContext();
-        Toast.makeText(context, recognizedText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
         Log.d(TAG, recognizedText);
         //baseApi.end();
 
