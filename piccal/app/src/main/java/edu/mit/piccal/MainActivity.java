@@ -21,13 +21,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,71 +34,21 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
+    private static final String TAG = "piccal_log";
+
+    // Tesseract Base Api
     public static final String DATA_PATH = Environment
             .getExternalStorageDirectory().toString() + "/piccal/";
-
-    // You should have the trained data file in assets folder
-    // You can get them at:
-    // http://code.google.com/p/tesseract-ocr/downloads/list
     public static final String LANG = "eng";
+    private TessBaseAPI baseApi = new TessBaseAPI();
 
     private Button mTakePhoto;
     private ImageView mImageView;
-    private static final String TAG = "upload";
-    private final static String LOG_HEADER = "piccal - Main";
-    private TessBaseAPI baseApi = new TessBaseAPI();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
-
-        for (String path : paths) {
-            File dir = new File(path);
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    Log.v(LOG_HEADER, "ERROR: Creation of directory " + path + " on sdcard failed");
-                    return;
-                } else {
-                    Log.v(LOG_HEADER, "Created directory " + path + " on sdcard");
-                }
-            }
-
-        }
-
-        // lang.traineddata file with the app (in assets folder)
-        // You can get them at:
-        // http://code.google.com/p/tesseract-ocr/downloads/list
-        // This area needs work and optimization
-        if (!(new File(DATA_PATH + "tessdata/" + LANG + ".traineddata")).exists()) {
-            try {
-
-                AssetManager assetManager = getAssets();
-                InputStream in = assetManager.open("tessdata/" + LANG + ".traineddata");
-                //GZIPInputStream gin = new GZIPInputStream(in);
-                OutputStream out = new FileOutputStream(DATA_PATH
-                        + "tessdata/" + LANG + ".traineddata");
-
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                //while ((lenf = gin.read(buff)) > 0) {
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                //gin.close();
-                out.close();
-
-                Log.v(LOG_HEADER, "Copied " + LANG + " traineddata");
-            } catch (IOException e) {
-                Log.e(LOG_HEADER, "Was unable to copy " + LANG + " traineddata " + e.toString());
-            }
-        }
-
-        baseApi.setDebug(true);
-        Log.d(LOG_HEADER, DATA_PATH);
-        baseApi.init(DATA_PATH, LANG);
+        initializeTessBaseApi();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -118,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     public void toCameraActivity(View view) {
         Intent i = new Intent(this, CameraOverlayActivity.class);
-        Log.d(LOG_HEADER, "Intent created.");
+        Log.d(TAG, "Intent created.");
         startActivity(i);
-        Log.d(LOG_HEADER, "Activity started.");
+        Log.d(TAG, "Activity started.");
     }
 
     @Override
@@ -143,102 +86,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
         Log.i(TAG, "onActivityResult: " + this);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             setPic();
-//			Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//			if (bitmap != null) {
-//				mImageView.setImageBitmap(bitmap);
-//				try {
-//					sendPhoto(bitmap);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-        }
-    }
-
-    private void sendPhoto(Bitmap bitmap) throws Exception {
-        new UploadTask().execute(bitmap);
-    }
-
-    private class UploadTask extends AsyncTask<Bitmap, Void, Void> {
-
-        protected Void doInBackground(Bitmap... bitmaps) {
-            if (bitmaps[0] == null)
-                return null;
-            setProgress(0);
-
-            Bitmap bitmap = bitmaps[0];
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream); // convert Bitmap to ByteArrayOutputStream
-            InputStream in = new ByteArrayInputStream(stream.toByteArray()); // convert ByteArrayOutputStream to ByteArrayInputStream
-
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-            try {
-                HttpPost httppost = new HttpPost(
-                        "http://192.168.8.84:8003/savetofile.php"); // server
-
-                MultipartEntity reqEntity = new MultipartEntity();
-                reqEntity.addPart("myFile",
-                        System.currentTimeMillis() + ".jpg", in);
-                httppost.setEntity(reqEntity);
-
-                Log.i(TAG, "request " + httppost.getRequestLine());
-                HttpResponse response = null;
-                try {
-                    response = httpclient.execute(httppost);
-                } catch (ClientProtocolException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                try {
-                    if (response != null)
-                        Log.i(TAG, "response " + response.getStatusLine().toString());
-                } finally {
-
-                }
-            } finally {
-
-            }
-
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            // TODO Auto-generated method stub
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-            Toast.makeText(MainActivity.this, R.string.uploaded, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -266,6 +116,55 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         // TODO Auto-generated method stub
         super.onSaveInstanceState(outState);
         Log.i(TAG, "onSaveInstanceState");
+    }
+
+    /**
+     * Initializes tesseract library with the english training data.
+     */
+    private void initializeTessBaseApi(){
+        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
+
+        for (String path : paths) {
+            File dir = new File(path);
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    Log.v(TAG, "ERROR: Creation of directory " + path + " on sdcard failed");
+                    return;
+                } else {
+                    Log.v(TAG, "Created directory " + path + " on sdcard");
+                }
+            }
+
+        }
+
+        if (!(new File(DATA_PATH + "tessdata/" + LANG + ".traineddata")).exists()) {
+            try {
+
+                AssetManager assetManager = getAssets();
+                InputStream in = assetManager.open("tessdata/" + LANG + ".traineddata");
+                //GZIPInputStream gin = new GZIPInputStream(in);
+                OutputStream out = new FileOutputStream(DATA_PATH
+                        + "tessdata/" + LANG + ".traineddata");
+
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                //while ((lenf = gin.read(buff)) > 0) {
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                //gin.close();
+                out.close();
+
+                Log.v(TAG, "Copied " + LANG + " traineddata");
+            } catch (IOException e) {
+                Log.e(TAG, "Was unable to copy " + LANG + " traineddata " + e.toString());
+            }
+        }
+
+        baseApi.setDebug(true);
+        baseApi.init(DATA_PATH, LANG); // Loads language training data
     }
 
     String mCurrentPhotoPath;
@@ -349,16 +248,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         baseApi.clear();
         Context context = getApplicationContext();
         Toast.makeText(context, recognizedText, Toast.LENGTH_SHORT).show();
-        Log.d(LOG_HEADER, recognizedText);
+        Log.d(TAG, recognizedText);
         //baseApi.end();
 
         mImageView.setImageBitmap(rotatedBMP);
-
-//        try {
-//            sendPhoto(rotatedBMP);
-//        } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
     }
 }
