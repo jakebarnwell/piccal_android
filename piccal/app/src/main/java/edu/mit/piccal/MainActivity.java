@@ -84,6 +84,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         dispatchTakePictureIntent();
     }
 
+    public void click_addTestToCal(View view) {
+        PiccalCalendar cal = new PiccalCalendar(this);
+        String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
+        String descr = "This is a test event for the Piccal android app.";
+        Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult: " + this);

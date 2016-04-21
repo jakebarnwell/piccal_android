@@ -9,34 +9,32 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.mit.piccal.MainActivity">
 
-    <LinearLayout
-        android:id="@+id/linear_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/take_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/take_photo" />
-
-    </LinearLayout>
+    <Button
+        android:id="@+id/take_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/take_photo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <ImageView
         android:id="@+id/imageview"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/linear_layout" />
+        android:layout_below="@+id/take_photo"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go to overlay camera activity"
-        android:id="@+id/btn_to_camera_activity"
-        android:onClick="toCameraActivity"
-        android:layout_below="@+id/linear_layout"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="64dp" />
+        android:text="Test Add to Cal"
+        android:id="@+id/btn_add_to_cal"
+        android:onClick="click_addTestToCal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 
 </RelativeLayout>
