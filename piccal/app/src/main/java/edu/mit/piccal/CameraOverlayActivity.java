@@ -71,6 +71,15 @@ public class CameraOverlayActivity extends Activity {
         baseApi = initOCR(LANG, DATA_PATH);
     }
 
+    public void onClick_takePicture(View view) {
+        if(inPreview) {
+            imViewWidth = preview.getWidth();
+            imViewHeight = preview.getHeight();
+            camera.takePicture(null, null, photoCallback);
+        }
+
+    }
+
     private TessBaseAPI initOCR(String lang, String data_path) {
         String[] paths = new String[] { data_path, data_path + "tessdata/" };
 
@@ -125,15 +134,6 @@ public class CameraOverlayActivity extends Activity {
         return api;
     }
 
-    public void onClick_takePicture(View view) {
-        if(inPreview) {
-            imViewWidth = preview.getWidth();
-            imViewHeight = preview.getHeight();
-            camera.takePicture(null, null, photoCallback);
-        }
-
-    }
-
     Camera.PictureCallback photoCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
             // Start to save the photo
@@ -157,17 +157,9 @@ public class CameraOverlayActivity extends Activity {
                 // Do OCR:
                 String extracted_text = extractTextFrom(bitmap_image, baseApi);
                 Toast.makeText(getApplicationContext(), extracted_text, Toast.LENGTH_SHORT).show();
-                //baseApi.end();
             }
         }
     };
-
-    private String extractTextFrom(Bitmap bmp, TessBaseAPI api) {
-        api.setImage(bmp);
-        String text = api.getUTF8Text();
-        Log.d(LOG_HEADER, "Recognized text: " + text);
-        return text;
-    }
 
     private Bitmap getBitmap(byte[] jpeg) {
         // Get the dimensions of the View
@@ -203,28 +195,11 @@ public class CameraOverlayActivity extends Activity {
         return rotatedBMP;
     }
 
-    private void show(View view) {
-        if(view != null) {
-            try {
-                if(view.getVisibility() != View.VISIBLE) {
-                    view.setVisibility(View.VISIBLE);
-                }
-            } catch(Exception e) {
-                Log.e(LOG_HEADER, "Error getting visibility of view object: " + e.toString());
-            }
-        }
-    }
-
-    private void hide(View view) {
-        if(view != null) {
-            try {
-                if(view.getVisibility() == View.VISIBLE) {
-                    view.setVisibility(View.GONE);
-                }
-            } catch(Exception e) {
-                Log.e(LOG_HEADER, "Error getting visibility of view object: " + e.toString());
-            }
-        }
+    private String extractTextFrom(Bitmap bmp, TessBaseAPI api) {
+        api.setImage(bmp);
+        String text = api.getUTF8Text();
+        Log.d(LOG_HEADER, "Recognized text: " + text);
+        return text;
     }
 
     class SavePhotoTask extends AsyncTask<byte[], String, String> {
@@ -311,6 +286,30 @@ public class CameraOverlayActivity extends Activity {
                     camera.setParameters(parameters);
                     cameraConfigured = true;
                 }
+            }
+        }
+    }
+
+    private void show(View view) {
+        if(view != null) {
+            try {
+                if(view.getVisibility() != View.VISIBLE) {
+                    view.setVisibility(View.VISIBLE);
+                }
+            } catch(Exception e) {
+                Log.e(LOG_HEADER, "Error getting visibility of view object: " + e.toString());
+            }
+        }
+    }
+
+    private void hide(View view) {
+        if(view != null) {
+            try {
+                if(view.getVisibility() == View.VISIBLE) {
+                    view.setVisibility(View.GONE);
+                }
+            } catch(Exception e) {
+                Log.e(LOG_HEADER, "Error getting visibility of view object: " + e.toString());
             }
         }
     }
