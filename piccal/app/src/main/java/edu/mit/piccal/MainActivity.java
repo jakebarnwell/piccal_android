@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,6 +43,14 @@ import org.bytedeco.javacpp.opencv_features2d;
 
 
 
+//import com.google.api.client.auth.oauth2.Credential;
+//import com.google.api.client.http.HttpTransport;
+//import com.google.api.client.json.JsonFactory;
+//import com.google.api.client.json.jackson2.JacksonFactory;
+//import com.google.appengine.repackaged.com.google.api.client.extensions.appengine.http.UrlFetchTransport;
+//import com.google.api.services.calendar.Calendar;
+//import com.google.api.services.calendar.model.Event;
+//import com.google.appengine.api.users.UserServiceFactory;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
@@ -100,6 +109,25 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
         String descr = "This is a test event for the Piccal android app.";
         Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
+
+
+        // Test quickAdd
+        // from: https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd#examples
+        // also: https://github.com/google/google-api-java-client-samples/blob/0b5c78984aedb0d837d088d84a9fc9da63938889/calendar-appengine-sample/src/main/java/com/google/api/services/samples/calendar/appengine/server/Utils.java
+
+//        final HttpTransport httpTransport = new UrlFetchTransport();
+//        final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+//        String userId = UserServiceFactory.getUserService().getCurrentUser().getUserId();
+//        Credential credential = newFlow().loadCredential(userId);
+//        Calendar service = new Calendar.Builder(httpTransport, jsonFactory, credential)
+//                .setApplicationName("applicationName").build();
+//
+//        // Quick-add an event
+//        String eventText = "Appointment at Somewhere on June 3rd 10am-10:25am";
+//        Event createdEvent =
+//                service.events().quickAdd(calendarId, "primary").setText(eventText).execute();
+//
+//        System.out.println(createdEvent.getId());
     }
 
     @Override
@@ -254,13 +282,24 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Bitmap bitmap = preprocessOpenCV(mCurrentPhotoPath);
         //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
-        Matrix mtx = new Matrix();
-        mtx.postRotate(90);
-        // Rotating Bitmap
-        Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(mCurrentPhotoPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
 
-        if (rotatedBMP != bitmap)
-            bitmap.recycle();
+        Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
+
+//        Matrix mtx = new Matrix();
+//        mtx.postRotate(90);
+//        // Rotating Bitmap
+//        Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
+//
+//        if (rotatedBMP != bitmap)
+//            bitmap.recycle();
 
 
         baseApi.setImage(rotatedBMP);
@@ -268,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         baseApi.clear();
         Context context = getApplicationContext();
         Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
-        Log.d(TAG, recognizedText);
+        Log.d(TAG, recognizedText.replaceAll("\n",""));
         //baseApi.end();
 
         mImageView.setImageBitmap(rotatedBMP);
@@ -282,5 +321,49 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         opencv_core.bitwise_not(image, image);
         Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
         return bitmap;
+    }
+
+    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_NORMAL:
+                return bitmap;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.setRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setRotate(180);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.setRotate(-90);
+                break;
+            default:
+                return bitmap;
+        }
+        try {
+            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            bitmap.recycle();
+            return bmRotated;
+        }
+        catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
