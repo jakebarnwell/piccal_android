@@ -30,11 +30,16 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.googlecode.tesseract.android.TessBaseAPI;
-import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.Event;
-import com.google.appengine.api.users.UserServiceFactory;
+
+//import com.google.api.client.auth.oauth2.Credential;
+//import com.google.api.client.http.HttpTransport;
+//import com.google.api.client.json.JsonFactory;
+//import com.google.api.client.json.jackson2.JacksonFactory;
+//import com.google.appengine.repackaged.com.google.api.client.extensions.appengine.http.UrlFetchTransport;
+//import com.google.api.services.calendar.Calendar;
+//import com.google.api.services.calendar.model.Event;
+//import com.google.appengine.api.users.UserServiceFactory;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
@@ -99,10 +104,19 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         // from: https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd#examples
         // also: https://github.com/google/google-api-java-client-samples/blob/0b5c78984aedb0d837d088d84a9fc9da63938889/calendar-appengine-sample/src/main/java/com/google/api/services/samples/calendar/appengine/server/Utils.java
 
+//        final HttpTransport httpTransport = new UrlFetchTransport();
+//        final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 //        String userId = UserServiceFactory.getUserService().getCurrentUser().getUserId();
 //        Credential credential = newFlow().loadCredential(userId);
-//        Calendar service = new Calendar.Builder(httpTransport, jsonFactory, credentials)
+//        Calendar service = new Calendar.Builder(httpTransport, jsonFactory, credential)
 //                .setApplicationName("applicationName").build();
+//
+//        // Quick-add an event
+//        String eventText = "Appointment at Somewhere on June 3rd 10am-10:25am";
+//        Event createdEvent =
+//                service.events().quickAdd(calendarId, "primary").setText(eventText).execute();
+//
+//        System.out.println(createdEvent.getId());
     }
 
     @Override
