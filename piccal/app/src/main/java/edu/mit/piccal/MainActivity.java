@@ -30,8 +30,11 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.googlecode.tesseract.android.TessBaseAPI;
-
+import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.model.Event;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
@@ -90,6 +93,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
         String descr = "This is a test event for the Piccal android app.";
         Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
+
+
+        // Test quickAdd
+        // from: https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd#examples
+        // also: https://github.com/google/google-api-java-client-samples/blob/0b5c78984aedb0d837d088d84a9fc9da63938889/calendar-appengine-sample/src/main/java/com/google/api/services/samples/calendar/appengine/server/Utils.java
+
+//        String userId = UserServiceFactory.getUserService().getCurrentUser().getUserId();
+//        Credential credential = newFlow().loadCredential(userId);
+//        Calendar service = new Calendar.Builder(httpTransport, jsonFactory, credentials)
+//                .setApplicationName("applicationName").build();
     }
 
     @Override
@@ -258,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         Context context = getApplicationContext();
         Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
-        Log.d(TAG, recognizedText);
+        Log.d(TAG, recognizedText.replaceAll("\n",""));
         //baseApi.end();
 
         mImageView.setImageBitmap(rotatedBMP);
