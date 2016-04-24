@@ -254,17 +254,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
 
-//        Matrix mtx = new Matrix();
-//        mtx.postRotate(90);
-//        // Rotating Bitmap
-//        Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
-//
-//        if (rotatedBMP != bitmap)
-//            bitmap.recycle();
+        String recognizedText = getBitmapText(rotatedBMP);
 
-        baseApi.setImage(rotatedBMP);
-        String recognizedText = baseApi.getUTF8Text();
-        baseApi.clear();
         Context context = getApplicationContext();
         Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
         Log.d(TAG, recognizedText);
@@ -316,5 +307,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String getBitmapText(Bitmap rotatedBMP){
+        baseApi.setImage(rotatedBMP);
+        String recognizedText = baseApi.getUTF8Text();
+        baseApi.clear();
+        String cleanText = recognizedText;
+        return cleanText;
     }
 }
