@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:22.2.1'
     //compile project(':libraries:tess-two')
     compile 'com.rmtheis:tess-two:5.4.1'
+    compile 'org.bytedeco.javacpp-presets:opencv:3.0.0-1.1'
 }
