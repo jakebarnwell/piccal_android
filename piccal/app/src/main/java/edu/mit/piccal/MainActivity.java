@@ -31,6 +31,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+import org.bytedeco.javacpp.opencv_highgui;
+import org.bytedeco.javacpp.opencv_imgproc;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_photo;
+import org.bytedeco.javacpp.opencv_calib3d;
+import org.bytedeco.javacpp.opencv_objdetect;
+import org.bytedeco.javacpp.opencv_imgcodecs;
+import org.bytedeco.javacpp.opencv_features2d;
+
+
+
 
 //import com.google.api.client.auth.oauth2.Credential;
 //import com.google.api.client.http.HttpTransport;
@@ -268,7 +279,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         bmOptions.inSampleSize = scaleFactor << 1;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Bitmap bitmap = preprocessOpenCV(mCurrentPhotoPath);
+        //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
         ExifInterface exif = null;
         try {
@@ -282,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
 
         String recognizedText = getBitmapText(rotatedBMP);
-
+        
         Context context = getApplicationContext();
         Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
         Log.d(TAG, recognizedText.replaceAll("\n",""));
@@ -291,6 +303,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         mImageView.setImageBitmap(rotatedBMP);
     }
 
+    private Bitmap preprocessOpenCV(String photoPath) {
+        opencv_core.Mat image = opencv_imgcodecs.imread(photoPath);
+        opencv_core.Size window = new opencv_core.Size(3, 3);
+        opencv_imgproc.GaussianBlur(image, image, window, 0);
+        opencv_imgproc.adaptiveThreshold(image, image, 255, opencv_imgproc.CV_ADAPTIVE_THRESH_MEAN_C, opencv_imgproc.CV_THRESH_BINARY, 75, 10);
+        opencv_core.bitwise_not(image, image);
+        Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
+        return bitmap;
+    }
 
     public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
 
