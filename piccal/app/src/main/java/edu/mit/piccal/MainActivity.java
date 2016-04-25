@@ -56,91 +56,46 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
     private static final String TAG = "piccal_log";
 
-    // Tesseract Base Api
-    public static final String DATA_PATH = Environment
-            .getExternalStorageDirectory().toString() + "/piccal/";
-    public static final String LANG = "eng";
-    private TessBaseAPI baseApi = new TessBaseAPI();
-
     private Button mTakePhoto;
-    private ImageView mImageView;
 
+    String mCurrentPhotoPath;
+
+    static final int REQUEST_TAKE_PHOTO = 1;
+    File photoFile = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initializeTessBaseApi();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mTakePhoto = (Button) findViewById(R.id.take_photo);
-        mImageView = (ImageView) findViewById(R.id.imageview);
-
         mTakePhoto.setOnClickListener(this);
-    }
-
-    public void toCameraActivity(View view) {
-        Intent i = new Intent(this, CameraOverlayActivity.class);
-        Log.d(TAG, "Intent created.");
-        startActivity(i);
-        Log.d(TAG, "Activity started.");
     }
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         int id = v.getId();
         switch (id) {
             case R.id.take_photo:
-                takePhoto();
+                dispatchTakePictureIntent();
                 break;
         }
-    }
-
-    private void takePhoto() {
-//		Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-//		intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-//		startActivityForResult(intent, 0);
-        dispatchTakePictureIntent();
-    }
-
-    public void click_addTestToCal(View view) {
-        PiccalCalendar cal = new PiccalCalendar(this);
-        String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
-        String descr = "This is a test event for the Piccal android app.";
-        Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
-
-
-        // Test quickAdd
-        // from: https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd#examples
-        // also: https://github.com/google/google-api-java-client-samples/blob/0b5c78984aedb0d837d088d84a9fc9da63938889/calendar-appengine-sample/src/main/java/com/google/api/services/samples/calendar/appengine/server/Utils.java
-
-//        final HttpTransport httpTransport = new UrlFetchTransport();
-//        final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-//        String userId = UserServiceFactory.getUserService().getCurrentUser().getUserId();
-//        Credential credential = newFlow().loadCredential(userId);
-//        Calendar service = new Calendar.Builder(httpTransport, jsonFactory, credential)
-//                .setApplicationName("applicationName").build();
-//
-//        // Quick-add an event
-//        String eventText = "Appointment at Somewhere on June 3rd 10am-10:25am";
-//        Event createdEvent =
-//                service.events().quickAdd(calendarId, "primary").setText(eventText).execute();
-//
-//        System.out.println(createdEvent.getId());
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult: " + this);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
-            setPic();
+            Intent intent = new Intent(this, EditResultActivity.class);
+            intent.putExtra("PHOTO_PATH", mCurrentPhotoPath);
+            startActivity(intent);
+            //setPic();
         }
     }
 
     @Override
     protected void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
         Log.i(TAG, "onResume: " + this);
     }
@@ -163,60 +118,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         super.onSaveInstanceState(outState);
         Log.i(TAG, "onSaveInstanceState");
     }
-
-    /**
-     * Initializes tesseract library with the english training data.
-     */
-    private void initializeTessBaseApi(){
-        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
-
-        for (String path : paths) {
-            File dir = new File(path);
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    Log.v(TAG, "ERROR: Creation of directory " + path + " on sdcard failed");
-                    return;
-                } else {
-                    Log.v(TAG, "Created directory " + path + " on sdcard");
-                }
-            }
-
-        }
-
-        if (!(new File(DATA_PATH + "tessdata/" + LANG + ".traineddata")).exists()) {
-            try {
-
-                AssetManager assetManager = getAssets();
-                InputStream in = assetManager.open("tessdata/" + LANG + ".traineddata");
-                //GZIPInputStream gin = new GZIPInputStream(in);
-                OutputStream out = new FileOutputStream(DATA_PATH
-                        + "tessdata/" + LANG + ".traineddata");
-
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                //while ((lenf = gin.read(buff)) > 0) {
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                //gin.close();
-                out.close();
-
-                Log.v(TAG, "Copied " + LANG + " traineddata");
-            } catch (IOException e) {
-                Log.e(TAG, "Was unable to copy " + LANG + " traineddata " + e.toString());
-            }
-        }
-
-        baseApi.setDebug(true);
-        baseApi.init(DATA_PATH, LANG); // Loads language training data
-    }
-
-    String mCurrentPhotoPath;
-
-    static final int REQUEST_TAKE_PHOTO = 1;
-    File photoFile = null;
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -259,109 +160,4 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         return image;
     }
 
-    private void setPic() {
-        // Get the dimensions of the View
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor << 1;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = preprocessOpenCV(mCurrentPhotoPath);
-        //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(mCurrentPhotoPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_UNDEFINED);
-
-        Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
-
-        String recognizedText = getBitmapText(rotatedBMP);
-        
-        Context context = getApplicationContext();
-        Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
-        Log.d(TAG, recognizedText.replaceAll("\n",""));
-        //baseApi.end();
-
-        mImageView.setImageBitmap(rotatedBMP);
-    }
-
-    private Bitmap preprocessOpenCV(String photoPath) {
-        opencv_core.Mat image = opencv_imgcodecs.imread(photoPath);
-        opencv_core.Size window = new opencv_core.Size(3, 3);
-        opencv_imgproc.GaussianBlur(image, image, window, 0);
-        opencv_imgproc.adaptiveThreshold(image, image, 255, opencv_imgproc.CV_ADAPTIVE_THRESH_MEAN_C, opencv_imgproc.CV_THRESH_BINARY, 75, 10);
-        opencv_core.bitwise_not(image, image);
-        Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
-        return bitmap;
-    }
-
-    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
-
-        Matrix matrix = new Matrix();
-        switch (orientation) {
-            case ExifInterface.ORIENTATION_NORMAL:
-                return bitmap;
-            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
-                matrix.setScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                matrix.setRotate(180);
-                break;
-            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
-                matrix.setRotate(180);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_TRANSPOSE:
-                matrix.setRotate(90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                matrix.setRotate(90);
-                break;
-            case ExifInterface.ORIENTATION_TRANSVERSE:
-                matrix.setRotate(-90);
-                matrix.postScale(-1, 1);
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                matrix.setRotate(-90);
-                break;
-            default:
-                return bitmap;
-        }
-        try {
-            Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
-            return bmRotated;
-        }
-        catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public String getBitmapText(Bitmap rotatedBMP){
-        baseApi.setImage(rotatedBMP);
-        String recognizedText = baseApi.getUTF8Text();
-        baseApi.clear();
-        String cleanText = recognizedText;
-        return cleanText;
-    }
 }
