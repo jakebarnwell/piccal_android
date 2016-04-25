@@ -14,9 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/take_photo"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -24,9 +23,9 @@
         android:text="Test Add to Cal"
         android:id="@+id/btn_add_to_cal"
         android:onClick="click_addTestToCal"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_marginTop="67dp"
+        android:layout_below="@+id/take_photo"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>

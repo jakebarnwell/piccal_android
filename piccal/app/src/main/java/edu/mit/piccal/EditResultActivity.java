@@ -378,6 +378,7 @@ public class EditResultActivity extends AppCompatActivity {
         Log.i(TAG, "onActivityResult: " + this);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             mPicLoaded = false;
+            onWindowFocusChanged(true);
         }
     }
 
@@ -403,9 +404,9 @@ public class EditResultActivity extends AppCompatActivity {
         PiccalCalendar cal = new PiccalCalendar(this);
         long[] epochTimes = cal.extractDateInfo(ocrText);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        sdf.format(new Date(epochTimes[0]));
+        String date = sdf.format(new Date(epochTimes[0]));
         EditText dateEditText = (EditText) findViewById(R.id.editTextDate);
-        dateEditText.setText(sdf.toString());
+        dateEditText.setText(date);
 
         EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);
