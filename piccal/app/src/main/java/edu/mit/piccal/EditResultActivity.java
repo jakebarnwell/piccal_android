@@ -374,18 +374,16 @@ public class EditResultActivity extends AppCompatActivity {
     }
 
 
-    private void populateTextEdits(String ocrText){
+    private void populateTextEdits(String ocrText) {
         PiccalCalendar cal = new PiccalCalendar(this);
         Long[] epochTimes = cal.extractDateInfo(ocrText);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         sdf.format(new Date(epochTimes[0]));
-        EditText dateEditText  = (EditText) findViewById(R.id.editTextDate);
+        EditText dateEditText = (EditText) findViewById(R.id.editTextDate);
         dateEditText.setText(sdf.toString());
 
-        EditText titleEditText  = (EditText) findViewById(R.id.editTextTitle);
+        EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);
-
-
     }
 
 
