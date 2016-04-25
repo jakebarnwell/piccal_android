@@ -35,7 +35,8 @@
             android:name=".CameraOverlayActivity"
             android:label="@string/title_activity_camera_overlay"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".EditResultActivity"></activity>
+        <activity android:name=".EditResultActivity" />
+        <activity android:name=".SuccessActivity"></activity>
     </application>
 
 </manifest>
