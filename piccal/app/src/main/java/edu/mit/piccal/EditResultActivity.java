@@ -1,5 +1,6 @@
 package edu.mit.piccal;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -7,8 +8,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,10 +37,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EditResultActivity extends AppCompatActivity {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
     private static final String TAG = "piccal_log";
+
+    static final int REQUEST_TAKE_PHOTO = 1;
 
     // Photo path from MainActivity
     String mCurrentPhotoPath;
@@ -49,7 +56,7 @@ public class EditResultActivity extends AppCompatActivity {
     private TessBaseAPI baseApi = new TessBaseAPI();
 
     private ImageView mImageView;
-    private boolean picLoaded;
+    private boolean mPicLoaded;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -81,7 +88,7 @@ public class EditResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_result);
         mImageView = (ImageView) findViewById(R.id.imageview);
-        picLoaded = false;
+        mPicLoaded = false;
     }
 
     @Override
@@ -102,13 +109,13 @@ public class EditResultActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        if (!picLoaded) {
+        if (!mPicLoaded) {
             Bitmap rotatedBitmap = getRotatedBitmap();
             Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap);
             mImageView.setImageBitmap(scaledBitmap);
 
             new ExtractTextTask().execute(mCurrentPhotoPath);
-            picLoaded = true;
+            mPicLoaded = true;
         }
     }
 
@@ -128,7 +135,7 @@ public class EditResultActivity extends AppCompatActivity {
                 ExifInterface.ORIENTATION_UNDEFINED);
 
         Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
-        bitmap.recycle();
+        //bitmap.recycle();
         return rotatedBMP;
     }
 
@@ -157,48 +164,6 @@ public class EditResultActivity extends AppCompatActivity {
         return resizedBitmap;
     }
 
-    private void setPic(Bitmap scaledBitmap) {
-        // Get the dimensions of the View
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
-        Log.d(TAG, Integer.toString(targetH));
-        Log.d(TAG, Integer.toString(targetW));
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor << 1;
-        bmOptions.inPurgeable = true;
-
-        //Bitmap bitmap = preprocessOpenCV(mCurrentPhotoPath);
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(mCurrentPhotoPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_UNDEFINED);
-
-        Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
-
-
-//        String recognizedText = getBitmapText(rotatedBMP);
-
-        mImageView.setImageBitmap(rotatedBMP);
-        picLoaded = true;
-    }
 
     public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
 
@@ -235,7 +200,7 @@ public class EditResultActivity extends AppCompatActivity {
         }
         try {
             Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
+            //bitmap.recycle();
             return bmRotated;
         }
         catch (OutOfMemoryError e) {
@@ -346,6 +311,70 @@ public class EditResultActivity extends AppCompatActivity {
         baseApi.setDebug(true);
         baseApi.init(DATA_PATH, LANG); // Loads language training data
     }
+
+    public void addToCalendar(View view) {
+        return;
+    }
+
+    public void retakePicture(View view) {
+        dispatchTakePictureIntent();
+        return;
+    }
+
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+
+    /**
+     * http://developer.android.com/training/camera/photobasics.html
+     */
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        String storageDir = Environment.getExternalStorageDirectory() + "/picupload";
+        File dir = new File(storageDir);
+        if (!dir.exists())
+            dir.mkdir();
+
+        File image = new File(storageDir + "/" + imageFileName + ".jpg");
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        Log.i(TAG, "photo path = " + mCurrentPhotoPath);
+        return image;
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i(TAG, "onActivityResult: " + this);
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
+            mPicLoaded = false;
+        }
+    }
+
+
 
     private class ExtractTextTask extends AsyncTask<String, Integer, String> {
         protected String doInBackground(String... paths) {

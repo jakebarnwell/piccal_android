@@ -131,7 +131,8 @@
                     android:layout_column="0"
                     android:layout_row="4"
                     android:layout_columnSpan="1"
-                    android:layout_rowSpan="1" />
+                    android:layout_rowSpan="1"
+                    android:onClick="addToCalendar"/>
 
                 <Button
                     android:layout_width="wrap_content"
@@ -141,7 +142,8 @@
                     android:layout_row="4"
                     android:layout_column="1"
                     android:layout_columnSpan="1"
-                    android:layout_rowSpan="1" />
+                    android:layout_rowSpan="1"
+                    android:onClick="retakePicture"/>
 
             </GridLayout>
         </LinearLayout>
