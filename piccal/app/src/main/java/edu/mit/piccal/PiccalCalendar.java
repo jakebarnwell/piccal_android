@@ -5,7 +5,11 @@ import android.content.Intent;
 import android.provider.CalendarContract;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +37,7 @@ public class PiccalCalendar {
         boolean day_found = false, month_found = false, year_found = false;
         boolean toTime_found = false, fromTime_found = false;
 
-        String the_month, the_day, the_year;
+        String the_month = null, the_day = null, the_year = null;
 
         // The Matcher object
         Matcher m;
@@ -73,68 +77,112 @@ public class PiccalCalendar {
          */
 
         String r1 = "(\\d\\d?)" + dash + "(\\d\\d?)" + "(" + dash + "(\\d\\d(\\d\\d)?))?";
-        String r2 = "\\d\\d(\\d\\d)?" + dash + "\\d\\d?" + dash + "\\d\\d?";
-        String r3 = months_alternated + d + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
+        String r2 = "(\\d\\d(\\d\\d)?)" + dash + "(\\d\\d?)" + dash + "(\\d\\d?)";
+        String r3 = months_alternated + d + "(\\d\\d?)" + th + "(" + d + "(" + dash + "|through|to)"
                 + d + months_alternated + d + "\\d\\d?" + th + ")?" + d + year;
         String r4 = year + d + months_alternated + d
-                + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
+                + "(\\d\\d?)" + th + "(" + d + "(" + dash + "|through|to)"
                 + d + months_alternated + d + "\\d\\d?" + th + ")?";
-        String r5 = "\\d\\d?" + th + d + "( |of)?" + d + months_alternated + d + year;
-        String r6 = months_alternated + d + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
+        String r5 = "(\\d\\d?)" + th + d + "(?: |of)?" + d + months_alternated + d + year;
+        String r6 = months_alternated + d + "(\\d\\d?)" + th + "(" + d + "(" + dash + "|through|to)"
                 + d + months_alternated + d + "\\d\\d?" + th + ")?";
-        String r7 = "\\d\\d?" + d + "( |of)?" + d + months_alternated;
+        String r7 = "(\\d\\d?)" + d + "(?: |of)?" + d + months_alternated;
 
+        String s;
         Log.d(L, "start mdy");
         m = Pattern.compile(r1).matcher(text);
         Log.d(L, r1);
         if(m.find()) {
-            int start = m.start(), end = m.end();
-            String s = "start,end = " + start + "," + end + ". match = " + text.substring(start,end);
-            Log.d(L,s);
             the_month = m.group(1);
             the_day = m.group(2);
             try {
                 the_year = m.group(4);
             } catch(Exception e) {
-                the_year = "";
+                the_year = null;
             }
-            s = "month = " + the_month +", day = " + the_day +", year = " + the_year;
-            Log.d(L,s);
-
         }
-//        Log.d(L, Boolean.toString(m.find()));
 
         Log.d(L, "start ymd");
         m = Pattern.compile(r2).matcher(text);
         Log.d(L, r2);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            Log.d(L, "success");
+            the_year = m.group(1);
+            the_month = m.group(2);
+            the_day = m.group(3);
+        }
 
         Log.d(L, "start 3rd pattern");
         m = Pattern.compile(r3).matcher(text);
         Log.d(L, r3);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            Log.d(L, "success");
+            the_month = m.group(1);
+            the_day = m.group(2);
+            the_year = m.group(m.groupCount());
+        }
 
         Log.d(L, "start 4th pattern");
         m = Pattern.compile(r4).matcher(text);
         Log.d(L, r4);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            Log.d(L, "success");
+            the_year = m.group(1);
+            the_month = m.group(2);
+            the_day = m.group(3);
+        }
 
         Log.d(L, "start 5th pattern");
         m = Pattern.compile(r5).matcher(text);
         Log.d(L, r5);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            Log.d(L, "success");
+            the_day = m.group(1);
+            the_month = m.group(2);
+            the_year = m.group(3);
+        }
 
         Log.d(L, "start 6th pattern");
         m = Pattern.compile(r6).matcher(text);
         Log.d(L, r6);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            Log.d(L, "success");
+            the_year = null;
+            the_month = m.group(1);
+            the_day = m.group(2);
+        }
 
         Log.d(L, "start 7th pattern");
         m = Pattern.compile(r7).matcher(text);
         Log.d(L, r7);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            Log.d(L, "success");
+            the_day = m.group(1);
+            the_month = m.group(2);
+            the_year = null;
+        }
 
-        return null;
+        long[] result = {0L,0L};
+        if(the_year == null) {
+            the_year = "2016";
+        }
+
+        Log.d(L, "Date: " + the_month + the_day + the_year);
+
+        Date date;
+        try {
+            date = new SimpleDateFormat("MMMMddyyyy", Locale.ENGLISH).parse(the_month + the_day + the_year);
+        } catch (ParseException e) {
+            date = new Date();
+            e.printStackTrace();
+        }
+
+
+        result[0] = date.getTime();
+        result[1] = date.getTime() + (1000 * 60 * 60);
+        Log.d(L, Long.toString(result[0]));
+
+        return result;
     }
 
     private String alternateThese(String[] strings) {
@@ -146,6 +194,10 @@ public class PiccalCalendar {
         result = result.substring(0, result.length() - bar.length());
 
         return result;
+    }
+
+    public long[] extractDateInfo(String text) {
+        return parseDateTime(text);
     }
 
     private String getMonthName(String regex_month) {
@@ -171,7 +223,11 @@ public class PiccalCalendar {
     }
 
     private String getYear(String regex_year) {
-        if(regex_year.length() == 2) {
+        if(regex_year == null) {
+            return null;
+        }
+
+        if (regex_year.length() == 2) {
             if(regex_year.startsWith("0") || regex_year.startsWith("1")) {
                 return "19" + regex_year;
             } else {
