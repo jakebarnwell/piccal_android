@@ -97,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         PiccalCalendar cal = new PiccalCalendar(this);
         String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
         String descr = "This is a test event for the Piccal android app.";
-        Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
+//        Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
+        Intent dispatchedIntent = cal.addEvent("unparsed 3/12/14,,@@january 3rd-5%nov 15-18th");
 
 
         // Test quickAdd
