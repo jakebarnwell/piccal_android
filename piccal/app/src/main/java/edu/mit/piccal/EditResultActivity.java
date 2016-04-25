@@ -103,14 +103,11 @@ public class EditResultActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         if (!picLoaded) {
-            Bitmap rotatedBitmap = preprocessOpenCV(mCurrentPhotoPath);
-//            Bitmap rotatedBitmap = getRotatedBitmap();
+            Bitmap rotatedBitmap = getRotatedBitmap();
             Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap);
             mImageView.setImageBitmap(scaledBitmap);
 
-//            String extractedText = getBitmapText(rotatedBitmap);
-            new ExtractTextTask().execute(rotatedBitmap);
-            //rotatedBitmap.recycle();
+            new ExtractTextTask().execute(mCurrentPhotoPath);
             picLoaded = true;
         }
     }
@@ -131,6 +128,7 @@ public class EditResultActivity extends AppCompatActivity {
                 ExifInterface.ORIENTATION_UNDEFINED);
 
         Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
+        bitmap.recycle();
         return rotatedBMP;
     }
 
@@ -266,7 +264,9 @@ public class EditResultActivity extends AppCompatActivity {
         baseApi.setImage(rotatedBMP);
         String recognizedText = baseApi.getUTF8Text();
         baseApi.clear();
-        String cleanText = recognizedText;
+        String cleanText = recognizedText.replaceAll("[^\\w\\s|_]", " ");
+//        cleanText = cleanText.replaceAll("[a-zA-Z0-9]");
+        cleanText = cleanText.replaceAll("( )+", " ");
         //baseApi.end();
 
         return cleanText;
@@ -347,10 +347,11 @@ public class EditResultActivity extends AppCompatActivity {
         baseApi.init(DATA_PATH, LANG); // Loads language training data
     }
 
-    private class ExtractTextTask extends AsyncTask<Bitmap, Integer, String> {
-        protected String doInBackground(Bitmap... bitmaps) {
-            Bitmap bitmap = bitmaps[0];
-            String extractedText = getBitmapText(bitmap);
+    private class ExtractTextTask extends AsyncTask<String, Integer, String> {
+        protected String doInBackground(String... paths) {
+            String imagePath = paths[0];
+            Bitmap processedBitmap = preprocessOpenCV(imagePath);
+            String extractedText = getBitmapText(processedBitmap);
             return extractedText;
         }
 
