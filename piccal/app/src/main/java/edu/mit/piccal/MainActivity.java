@@ -31,15 +31,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
-import org.bytedeco.javacpp.opencv_highgui;
-import org.bytedeco.javacpp.opencv_imgproc;
-import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.opencv_photo;
-import org.bytedeco.javacpp.opencv_calib3d;
-import org.bytedeco.javacpp.opencv_objdetect;
-import org.bytedeco.javacpp.opencv_imgcodecs;
-import org.bytedeco.javacpp.opencv_features2d;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Core;
 
 
 
@@ -66,6 +67,25 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private ImageView mImageView;
 
 
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+//                    mTakePhoto.setOnClickListener(MainActivity.this);
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                }
+                break;
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTessBaseApi();
@@ -77,6 +97,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         mImageView = (ImageView) findViewById(R.id.imageview);
 
         mTakePhoto.setOnClickListener(this);
+    }
+
+
+    @Override
+    protected void onStart(){
+        super.onStart();
     }
 
     public void toCameraActivity(View view) {
@@ -142,7 +168,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+
         Log.i(TAG, "onResume: " + this);
+        //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
+        if (!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
+        } else {
+            Log.d(TAG, "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
     }
 
     @Override
@@ -263,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         // Get the dimensions of the View
         int targetW = mImageView.getWidth();
         int targetH = mImageView.getHeight();
+        Log.i(TAG, "photo path = " + mCurrentPhotoPath);
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -279,6 +315,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         bmOptions.inSampleSize = scaleFactor << 1;
         bmOptions.inPurgeable = true;
 
+        Log.i(TAG, "Prepressesing Camera Image (START)");
         Bitmap bitmap = preprocessOpenCV(mCurrentPhotoPath);
         //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
@@ -304,12 +341,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     }
 
     private Bitmap preprocessOpenCV(String photoPath) {
-        opencv_core.Mat image = opencv_imgcodecs.imread(photoPath);
-        opencv_core.Size window = new opencv_core.Size(3, 3);
-        opencv_imgproc.GaussianBlur(image, image, window, 0);
-        opencv_imgproc.adaptiveThreshold(image, image, 255, opencv_imgproc.CV_ADAPTIVE_THRESH_MEAN_C, opencv_imgproc.CV_THRESH_BINARY, 75, 10);
-        opencv_core.bitwise_not(image, image);
+        Mat original_image = Imgcodecs.imread(photoPath);
+        Imgproc.pyrDown(original_image, original_image);
+        Mat image = new Mat();
+        Imgproc.cvtColor(original_image, image, Imgproc.COLOR_BGRA2GRAY, 1);
+        Size window = new Size(3, 3);
+        Imgproc.GaussianBlur(image, image, window, 0);
+        Imgproc.adaptiveThreshold(image, image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 75, 10);
+        Core.bitwise_not(image, image);
+        Log.i(TAG, "Prepressesing Camera Image (END)" + image.size().toString());
         Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(image, bitmap);
         return bitmap;
     }
 
