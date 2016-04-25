@@ -181,7 +181,11 @@ public class PiccalCalendar {
             the_year = "2016";
         }
 
-        Log.d(L, "Date: " + the_month + the_day + the_year);
+        String day = getDay(the_day);
+        String month = getMonthName(the_month);
+        String year = getYear(the_year);
+
+        Log.d(L, "Date: " + month + ":" + day + ":" + year);
 
         Date date;
         try {
