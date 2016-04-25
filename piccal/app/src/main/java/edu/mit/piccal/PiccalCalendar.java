@@ -55,6 +55,8 @@ public class PiccalCalendar {
         boolean day_found = false, month_found = false, year_found = false;
         boolean toTime_found = false, fromTime_found = false;
 
+        String the_month, the_day, the_year;
+
         // The Matcher object
         Matcher m;
 
@@ -67,9 +69,9 @@ public class PiccalCalendar {
         // Represent an apostrophe that comes before a year, e.g. '12
         String apostrophe = "['\"`]";
         // Possible endings on any numbers. Optional in all situations.
-        String th = "(st|nd|rd|th)?";
+        String th = "(?:st|nd|rd|th)?";
         // Represent a year token
-        String year = "\\d\\d(\\d\\d)?|" + apostrophe + "\\d\\d";
+        String year = "(\\d\\d(\\d\\d)?|" + apostrophe + "\\d\\d)";
 
         // Array of months, regex form:
         String[] MONTHS = {"jan(uary)?","feb(r(uary)?)?","mar(ch)?","apr(il)?","may","june?","july?",
@@ -92,7 +94,7 @@ public class PiccalCalendar {
           7. "12th of november" and similar
          */
 
-        String r1 = "\\d\\d?" + dash + "\\d\\d?" + "(" + dash + "\\d\\d(\\d\\d)?)?";
+        String r1 = "(\\d\\d?)" + dash + "(\\d\\d?)" + "(" + dash + "(\\d\\d(\\d\\d)?))?";
         String r2 = "\\d\\d(\\d\\d)?" + dash + "\\d\\d?" + dash + "\\d\\d?";
         String r3 = months_alternated + d + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
                 + d + months_alternated + d + "\\d\\d?" + th + ")?" + d + year;
@@ -107,7 +109,22 @@ public class PiccalCalendar {
         Log.d(L, "start mdy");
         m = Pattern.compile(r1).matcher(text);
         Log.d(L, r1);
-        Log.d(L, Boolean.toString(m.find()));
+        if(m.find()) {
+            int start = m.start(), end = m.end();
+            String s = "start,end = " + start + "," + end + ". match = " + text.substring(start,end);
+            Log.d(L,s);
+            the_month = m.group(1);
+            the_day = m.group(2);
+            try {
+                the_year = m.group(4);
+            } catch(Exception e) {
+                the_year = "";
+            }
+            s = "month = " + the_month +", day = " + the_day +", year = " + the_year;
+            Log.d(L,s);
+
+        }
+//        Log.d(L, Boolean.toString(m.find()));
 
         Log.d(L, "start ymd");
         m = Pattern.compile(r2).matcher(text);
@@ -151,5 +168,9 @@ public class PiccalCalendar {
         result = result.substring(0, result.length() - bar.length());
 
         return result;
+    }
+
+    private String realMonthName(int n) {
+    return null;
     }
 }
