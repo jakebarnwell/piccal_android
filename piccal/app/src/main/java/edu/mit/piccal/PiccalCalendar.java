@@ -59,9 +59,18 @@ public class PiccalCalendar {
         Matcher m;
 
         // Represents (reasonable) possible date-delimiters, including / and -
-        String dash = "[-_~/\\|\\\\]";
+        String dash = "[-.––_~/\\|\\\\]";
         // Represents any delimiter that isn't a digit/letter
         String delimit = "[^\\w\\d]";
+        // Short-hand for delimit*
+        String d = delimit + "*";
+        // Represent an apostrophe that comes before a year, e.g. '12
+        String apostrophe = "['\"`]";
+        // Possible endings on any numbers. Optional in all situations.
+        String th = "(st|nd|rd|th)?";
+        // Represent a year token
+        String year = "\\d\\d(\\d\\d)?|" + apostrophe + "\\d\\d";
+
         // Array of months, regex form:
         String[] MONTHS = {"jan(uary)?","feb(r(uary)?)?","mar(ch)?","apr(il)?","may","june?","july?",
                 "aug(ust)?","sep(t(ember)?)?","oct(ober)?","nov(ember)?","dec(ember)?"};
@@ -85,16 +94,15 @@ public class PiccalCalendar {
 
         String r1 = "\\d\\d?" + dash + "\\d\\d?" + "(" + dash + "\\d\\d(\\d\\d)?)?";
         String r2 = "\\d\\d(\\d\\d)?" + dash + "\\d\\d?" + dash + "\\d\\d?";
-        String r3 = months_alternated + " ?\\d\\d?(st|nd|rd|th)?([ ,]*(" + dash + "|through|to)"
-                + "[ ,]*" + months_alternated + " ?\\d\\d?(st|nd|rd|th)?)?" + delimit
-                + "*\\d\\d(\\d\\d)?";
-        String r4 = "*\\d\\d(\\d\\d)?" + delimit + "*" + months_alternated
-                + " ?\\d\\d?(st|nd|rd|th)?([ ,]*(" + dash + "|through|to)"
-                + "[ ,]*" + months_alternated + " ?\\d\\d?(st|nd|rd|th)?)?";
-        String r5 = "\\d\\d?(st|nd|rd|th)?( |of)?" + months_alternated + delimit + "*\\d\\d(\\d\\d)?";
-        String r6 = months_alternated + " ?\\d\\d?(st|nd|rd|th)?([ ,]*(" + dash + "|through|to)"
-                + "[ ,]*" + months_alternated + " ?\\d\\d?(st|nd|rd|th)?)?";
-        String r7 = "\\d\\d?(st|nd|rd|th)?( |of)?" + months_alternated;
+        String r3 = months_alternated + d + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
+                + d + months_alternated + d + "\\d\\d?" + th + ")?" + d + year;
+        String r4 = year + d + months_alternated + d
+                + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
+                + d + months_alternated + d + "\\d\\d?" + th + ")?";
+        String r5 = "\\d\\d?" + th + d + "( |of)?" + d + months_alternated + d + year;
+        String r6 = months_alternated + d + "\\d\\d?" + th + "(" + d + "(" + dash + "|through|to)"
+                + d + months_alternated + d + "\\d\\d?" + th + ")?";
+        String r7 = "\\d\\d?" + d + "( |of)?" + d + months_alternated;
 
         Log.d(L, "start mdy");
         m = Pattern.compile(r1).matcher(text);
