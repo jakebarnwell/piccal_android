@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -370,6 +371,25 @@ public class EditResultActivity extends AppCompatActivity {
             Toast.makeText(context, result, Toast.LENGTH_LONG).show();
             Log.d(TAG, result.replaceAll("\n", ""));
             super.onPostExecute(result);
+            populateTextEdits(result);
         }
     }
+
+
+    private void populateTextEdits(String ocrText){
+        PiccalCalendar cal = new PiccalCalendar(this);
+        Long[] epochTimes = cal.extractDateInfo(ocrText);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        sdf.format(new Date(epochTimes[0]));
+        EditText dateEditText  = (EditText) findViewById(R.id.editTextDate);
+        dateEditText.setText(sdf.toString());
+
+        EditText titleEditText  = (EditText) findViewById(R.id.editTextTitle);
+        titleEditText.setText(ocrText);
+
+
+    }
+
+
+
 }
