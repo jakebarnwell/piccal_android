@@ -16,7 +16,8 @@
         android:text="@string/success_msg_textView"
         android:id="@+id/success_textView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
     <Button
         android:layout_width="wrap_content"
