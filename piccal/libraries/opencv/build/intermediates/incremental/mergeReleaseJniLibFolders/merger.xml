@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/Users/SK/AndroidStudioProjects/6S198-Project2-MIT-Spring-2016/piccal/libraries/opencv/src/main/jniLibs"/></dataSet><dataSet config="release"><source path="/Users/SK/AndroidStudioProjects/6S198-Project2-MIT-Spring-2016/piccal/libraries/opencv/src/release/jniLibs"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="C:\Users\Jake\AndroidStudioProjects\piccal_android\piccal\libraries\opencv\src\main\jniLibs"/></dataSet><dataSet config="release"><source path="C:\Users\Jake\AndroidStudioProjects\piccal_android\piccal\libraries\opencv\src\release\jniLibs"/></dataSet></merger>

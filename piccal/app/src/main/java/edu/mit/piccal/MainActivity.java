@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -71,6 +72,32 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 dispatchTakePictureIntent();
                 break;
         }
+    }
+
+    public void click_addTestToCal(View view) {
+        PiccalCalendar cal = new PiccalCalendar(this);
+        String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
+        String descr = "This is a test event for the Piccal android app.";
+        long startTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis() + (1000 * 3600); // adds 1 hour
+//        Intent dispatchedIntent = addEvent(title, startTime, endTime, descr, loc);
+        Intent dispatchedIntent = cal.addEvent("unparsed 3/12/14,,@@january 3rd-5%nov 15-18th");
+    }
+
+    public Intent addEvent(String title, long start_time, long end_time, String descr, String loc) {
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.Events.TITLE, title)
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
+                .putExtra(CalendarContract.Events.DESCRIPTION, descr)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start_time)
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end_time);
+
+        if (intent.resolveActivity(this.getPackageManager()) != null) {
+            this.startActivity(intent);
+        }
+
+        return intent;
     }
 
     @Override

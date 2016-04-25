@@ -241,26 +241,7 @@ public class EditResultActivity extends AppCompatActivity {
         PiccalCalendar cal = new PiccalCalendar(this);
         String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
         String descr = "This is a test event for the Piccal android app.";
-        Intent dispatchedIntent = cal.addEvent(title, time_date, descr, loc);
 
-
-        // Test quickAdd
-        // from: https://developers.google.com/google-apps/calendar/v3/reference/events/quickAdd#examples
-        // also: https://github.com/google/google-api-java-client-samples/blob/0b5c78984aedb0d837d088d84a9fc9da63938889/calendar-appengine-sample/src/main/java/com/google/api/services/samples/calendar/appengine/server/Utils.java
-
-//        final HttpTransport httpTransport = new UrlFetchTransport();
-//        final JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-//        String userId = UserServiceFactory.getUserService().getCurrentUser().getUserId();
-//        Credential credential = newFlow().loadCredential(userId);
-//        Calendar service = new Calendar.Builder(httpTransport, jsonFactory, credential)
-//                .setApplicationName("applicationName").build();
-//
-//        // Quick-add an event
-//        String eventText = "Appointment at Somewhere on June 3rd 10am-10:25am";
-//        Event createdEvent =
-//                service.events().quickAdd(calendarId, "primary").setText(eventText).execute();
-//
-//        System.out.println(createdEvent.getId());
     }
 
     /**
