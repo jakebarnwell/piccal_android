@@ -32,6 +32,18 @@ import java.util.Date;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Core;
+
+
+
 //import com.google.api.client.auth.oauth2.Credential;
 //import com.google.api.client.http.HttpTransport;
 //import com.google.api.client.json.JsonFactory;
@@ -55,6 +67,25 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     private ImageView mImageView;
 
 
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+//                    mTakePhoto.setOnClickListener(MainActivity.this);
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                }
+                break;
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTessBaseApi();
@@ -66,6 +97,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         mImageView = (ImageView) findViewById(R.id.imageview);
 
         mTakePhoto.setOnClickListener(this);
+    }
+
+
+    @Override
+    protected void onStart(){
+        super.onStart();
     }
 
     public void toCameraActivity(View view) {
@@ -132,7 +169,16 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     protected void onResume() {
         // TODO Auto-generated method stub
         super.onResume();
+
         Log.i(TAG, "onResume: " + this);
+        //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
+        if (!OpenCVLoader.initDebug()) {
+            Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
+        } else {
+            Log.d(TAG, "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
     }
 
     @Override
@@ -253,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         // Get the dimensions of the View
         int targetW = mImageView.getWidth();
         int targetH = mImageView.getHeight();
+        Log.i(TAG, "photo path = " + mCurrentPhotoPath);
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -269,7 +316,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         bmOptions.inSampleSize = scaleFactor << 1;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Log.i(TAG, "Prepressesing Camera Image (START)");
+        Bitmap bitmap = preprocessOpenCV(mCurrentPhotoPath);
+        //Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 
         ExifInterface exif = null;
         try {
@@ -282,17 +331,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
 
-//        Matrix mtx = new Matrix();
-//        mtx.postRotate(90);
-//        // Rotating Bitmap
-//        Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
-//
-//        if (rotatedBMP != bitmap)
-//            bitmap.recycle();
-
-        baseApi.setImage(rotatedBMP);
-        String recognizedText = baseApi.getUTF8Text();
-        baseApi.clear();
+        String recognizedText = getBitmapText(rotatedBMP);
+        
         Context context = getApplicationContext();
         Toast.makeText(context, recognizedText, Toast.LENGTH_LONG).show();
         Log.d(TAG, recognizedText.replaceAll("\n",""));
@@ -301,6 +341,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         mImageView.setImageBitmap(rotatedBMP);
     }
 
+    private Bitmap preprocessOpenCV(String photoPath) {
+        Mat original_image = Imgcodecs.imread(photoPath);
+        Imgproc.pyrDown(original_image, original_image);
+        Mat image = new Mat();
+        Imgproc.cvtColor(original_image, image, Imgproc.COLOR_BGRA2GRAY, 1);
+        Size window = new Size(3, 3);
+        Imgproc.GaussianBlur(image, image, window, 0);
+        Imgproc.adaptiveThreshold(image, image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 75, 10);
+        Core.bitwise_not(image, image);
+        Log.i(TAG, "Prepressesing Camera Image (END)" + image.size().toString());
+        Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(image, bitmap);
+        return bitmap;
+    }
 
     public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
 
@@ -344,5 +398,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String getBitmapText(Bitmap rotatedBMP){
+        baseApi.setImage(rotatedBMP);
+        String recognizedText = baseApi.getUTF8Text();
+        baseApi.clear();
+        String cleanText = recognizedText;
+        return cleanText;
     }
 }
