@@ -356,8 +356,6 @@ public class EditResultActivity extends AppCompatActivity {
         }
     }
 
-
-
     private class ExtractTextTask extends AsyncTask<String, Integer, String> {
         protected String doInBackground(String... paths) {
             String imagePath = paths[0];
@@ -369,7 +367,7 @@ public class EditResultActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             Context context = getApplicationContext();
             Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            Log.d(TAG, result.replaceAll("\n", ""));
+            Log.d(TAG, result.replaceAll("\n", " "));
             super.onPostExecute(result);
             populateTextEdits(result);
         }
