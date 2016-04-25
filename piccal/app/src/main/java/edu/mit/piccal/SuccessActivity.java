@@ -23,7 +23,6 @@ public class SuccessActivity extends AppCompatActivity {
     }
 
     public void quitApp(View view) {
-        finish();
-        System.exit(0);
+        this.finishAffinity();
     }
 }

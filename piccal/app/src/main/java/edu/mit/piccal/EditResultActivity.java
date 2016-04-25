@@ -48,6 +48,7 @@ public class EditResultActivity extends AppCompatActivity {
     private static final String TAG = "piccal_log";
 
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int ADD_CALENDAR_EVENT = 2;
 
     // Photo path from MainActivity
     String mCurrentPhotoPath;
@@ -305,6 +306,7 @@ public class EditResultActivity extends AppCompatActivity {
         long endTime = startTime + (1000 * 3600);
 
         Intent dispatchedEvent = addEvent(title, startTime, endTime, descr, loc);
+
     }
 
     public Intent addEvent(String title, long start_time, long end_time, String descr, String loc) {
@@ -317,7 +319,7 @@ public class EditResultActivity extends AppCompatActivity {
                 .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end_time);
 
         if (intent.resolveActivity(this.getPackageManager()) != null) {
-            this.startActivity(intent);
+            startActivityForResult(intent, ADD_CALENDAR_EVENT);
         }
 
         return intent;
@@ -379,6 +381,10 @@ public class EditResultActivity extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             mPicLoaded = false;
             onWindowFocusChanged(true);
+        } else if (requestCode == ADD_CALENDAR_EVENT) {
+            Log.d(TAG, "Got here");
+            Intent successIntent = new Intent(this, SuccessActivity.class);
+            startActivity(successIntent);
         }
     }
 
