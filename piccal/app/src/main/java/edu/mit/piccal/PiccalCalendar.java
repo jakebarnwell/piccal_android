@@ -189,7 +189,7 @@ public class PiccalCalendar {
 
         Date date;
         try {
-            date = new SimpleDateFormat("MMMMddyyyy", Locale.ENGLISH).parse(the_month + the_day + the_year);
+            date = new SimpleDateFormat("MMMMddyyyy", Locale.ENGLISH).parse(month + day + year);
         } catch (ParseException e) {
             date = new Date();
             e.printStackTrace();
@@ -225,14 +225,18 @@ public class PiccalCalendar {
             int ind = Integer.parseInt(regex_month);
             try {
                 return MONTHS[ind];
-            } catch(Exception e) {
+            } catch(Exception e3) {
                 ;
             }
         } catch(Exception e) {
-            for(String MONTH : MONTHS) {
-                if(MONTH.toLowerCase().contains(regex_month)) {
-                    return MONTH;
+            try {
+                for (String MONTH : MONTHS) {
+                    if (MONTH.toLowerCase().contains(regex_month)) {
+                        return MONTH;
+                    }
                 }
+            } catch(Exception e2) {
+                ;
             }
         }
 
@@ -246,9 +250,9 @@ public class PiccalCalendar {
 
         if (regex_year.length() == 2) {
             if(regex_year.startsWith("0") || regex_year.startsWith("1")) {
-                return "19" + regex_year;
-            } else {
                 return "20" + regex_year;
+            } else {
+                return "19" + regex_year;
             }
         } else if(regex_year.length() == 4) {
             return regex_year;
