@@ -355,8 +355,6 @@ public class EditResultActivity extends AppCompatActivity {
         }
     }
 
-
-
     private class ExtractTextTask extends AsyncTask<String, Integer, String> {
         protected String doInBackground(String... paths) {
             String imagePath = paths[0];
