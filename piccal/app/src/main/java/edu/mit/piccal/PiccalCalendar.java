@@ -21,28 +21,6 @@ public class PiccalCalendar {
         context = ctx;
     }
 
-    public Intent addEvent(String title, String time_date, String descr, String loc) {
-        // We should actually parse the time from the time_date string but for now
-        //  just make something up
-
-        long startTime = System.currentTimeMillis();
-        long endTime = System.currentTimeMillis() + (1000 * 3600); // adds 1 hour
-
-        Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.Events.TITLE, title)
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
-                .putExtra(CalendarContract.Events.DESCRIPTION, descr)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime)
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime);
-
-        if (intent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(intent);
-        }
-
-        return intent;
-    }
-
     public Intent addEvent(String unparsedText) {
         // do stuff
         long[] event_time = parseDateTime(unparsedText);
@@ -170,7 +148,43 @@ public class PiccalCalendar {
         return result;
     }
 
-    private String realMonthName(int n) {
-    return null;
+    private String getMonthName(String regex_month) {
+        String[] MONTHS ={"January","February","March","April","May","June",
+                "July","August","September","October","November","December"};
+
+        try {
+            int ind = Integer.parseInt(regex_month);
+            try {
+                return MONTHS[ind];
+            } catch(Exception e) {
+                ;
+            }
+        } catch(Exception e) {
+            for(String MONTH : MONTHS) {
+                if(MONTH.toLowerCase().contains(regex_month)) {
+                    return MONTH;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private String getYear(String regex_year) {
+        if(regex_year.length() == 2) {
+            if(regex_year.startsWith("0") || regex_year.startsWith("1")) {
+                return "19" + regex_year;
+            } else {
+                return "20" + regex_year;
+            }
+        } else if(regex_year.length() == 4) {
+            return regex_year;
+        } else {
+            return null;
+        }
+    }
+
+    private String getDay(String regex_day) {
+        return regex_day;
     }
 }
