@@ -84,22 +84,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Intent dispatchedIntent = cal.addEvent("unparsed 3/12/14 january");
     }
 
-    public Intent addEvent(String title, long start_time, long end_time, String descr, String loc) {
-        Intent intent = new Intent(Intent.ACTION_INSERT)
-                .setData(CalendarContract.Events.CONTENT_URI)
-                .putExtra(CalendarContract.Events.TITLE, title)
-                .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
-                .putExtra(CalendarContract.Events.DESCRIPTION, descr)
-                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start_time)
-                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end_time);
-
-        if (intent.resolveActivity(this.getPackageManager()) != null) {
-            this.startActivity(intent);
-        }
-
-        return intent;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult: " + this);

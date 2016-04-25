@@ -11,6 +11,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -238,13 +240,6 @@ public class EditResultActivity extends AppCompatActivity {
         return cleanText;
     }
 
-    public void click_addTestToCal(View view) {
-        PiccalCalendar cal = new PiccalCalendar(this);
-        String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
-        String descr = "This is a test event for the Piccal android app.";
-
-    }
-
     /**
      * Initializes tesseract library with the english training data.
      */
@@ -295,7 +290,37 @@ public class EditResultActivity extends AppCompatActivity {
     }
 
     public void addToCalendar(View view) {
-        return;
+        String title = ((EditText) findViewById(R.id.editTextTitle)).getText().toString();
+        String descr = ((EditText) findViewById(R.id.editTextDescription)).getText().toString();
+        String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
+        String string_date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
+
+        Date date = new Date();
+        try {
+            date = new SimpleDateFormat("dd/mm/yyyy").parse(string_date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long startTime = date.getTime();
+        long endTime = startTime + (1000 * 3600);
+
+        Intent dispatchedEvent = addEvent(title, startTime, endTime, descr, loc);
+    }
+
+    public Intent addEvent(String title, long start_time, long end_time, String descr, String loc) {
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.Events.TITLE, title)
+                .putExtra(CalendarContract.Events.EVENT_LOCATION, loc)
+                .putExtra(CalendarContract.Events.DESCRIPTION, descr)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start_time)
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end_time);
+
+        if (intent.resolveActivity(this.getPackageManager()) != null) {
+            this.startActivity(intent);
+        }
+
+        return intent;
     }
 
     public void retakePicture(View view) {
