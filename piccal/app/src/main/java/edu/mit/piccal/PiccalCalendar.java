@@ -48,6 +48,7 @@ public class PiccalCalendar {
         String delimit = "[^\\w\\d]";
         // Short-hand for delimit*
         String d = delimit + "*";
+        d = ".*?"; // hack for now
         // Represent an apostrophe that comes before a year, e.g. '12
         String apostrophe = "['\"`]";
         // Possible endings on any numbers. Optional in all situations.
@@ -56,8 +57,8 @@ public class PiccalCalendar {
         String year = "(\\d\\d(\\d\\d)?|" + apostrophe + "\\d\\d)";
 
         // Array of months, regex form:
-        String[] MONTHS = {"jan(uary)?","feb(r(uary)?)?","mar(ch)?","apr(il)?","may","june?","july?",
-                "aug(ust)?","sep(t(ember)?)?","oct(ober)?","nov(ember)?","dec(ember)?"};
+        String[] MONTHS = {"jan(uary)?", "feb(r(uary)?)?", "mar(ch)?", "apr(il)?", "may", "june?", "july?",
+                "aug(ust)?", "sep(t(ember)?)?", "oct(ober)?", "nov(ember)?", "dec(ember)?"};
         // Alternation of regex months, i.e. "jan(uary)?|feb(r(uary)?)?|..."
         String months_alternated = "(" + alternateThese(MONTHS) + ")";
 
@@ -92,75 +93,88 @@ public class PiccalCalendar {
         Log.d(L, "start mdy");
         m = Pattern.compile(r1).matcher(text);
         Log.d(L, r1);
-        if(m.find()) {
+        if (m.find()) {
             the_month = m.group(1);
             the_day = m.group(2);
             try {
                 the_year = m.group(4);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 the_year = null;
             }
+
+            return dateToLong(the_day, the_month, the_year);
         }
 
         Log.d(L, "start ymd");
         m = Pattern.compile(r2).matcher(text);
         Log.d(L, r2);
-        if(m.find()) {
+        if (m.find()) {
             Log.d(L, "success");
             the_year = m.group(1);
             the_month = m.group(2);
             the_day = m.group(3);
+            return dateToLong(the_day, the_month, the_year);
         }
 
         Log.d(L, "start 3rd pattern");
         m = Pattern.compile(r3).matcher(text);
         Log.d(L, r3);
-        if(m.find()) {
+        if (m.find()) {
             Log.d(L, "success");
             the_month = m.group(1);
             the_day = m.group(2);
             the_year = m.group(m.groupCount());
+            return dateToLong(the_day, the_month, the_year);
         }
 
         Log.d(L, "start 4th pattern");
         m = Pattern.compile(r4).matcher(text);
         Log.d(L, r4);
-        if(m.find()) {
+        if (m.find()) {
             Log.d(L, "success");
             the_year = m.group(1);
             the_month = m.group(2);
             the_day = m.group(3);
+            return dateToLong(the_day, the_month, the_year);
         }
 
         Log.d(L, "start 5th pattern");
         m = Pattern.compile(r5).matcher(text);
         Log.d(L, r5);
-        if(m.find()) {
+        if (m.find()) {
             Log.d(L, "success");
             the_day = m.group(1);
             the_month = m.group(2);
             the_year = m.group(3);
+            return dateToLong(the_day, the_month, the_year);
         }
 
         Log.d(L, "start 6th pattern");
         m = Pattern.compile(r6).matcher(text);
         Log.d(L, r6);
-        if(m.find()) {
+        if (m.find()) {
             Log.d(L, "success");
             the_year = null;
             the_month = m.group(1);
             the_day = m.group(2);
+            return dateToLong(the_day, the_month, the_year);
         }
 
         Log.d(L, "start 7th pattern");
         m = Pattern.compile(r7).matcher(text);
         Log.d(L, r7);
-        if(m.find()) {
+        if (m.find()) {
             Log.d(L, "success");
             the_day = m.group(1);
             the_month = m.group(2);
             the_year = null;
+            return dateToLong(the_day, the_month, the_year);
         }
+
+        return dateToLong(the_day, the_month, the_year);
+    }
+
+    public long[] dateToLong(String the_day, String the_month, String the_year) {
 
         long[] result = {0L,0L};
         if(the_year == null) {
