@@ -21,7 +21,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="New Button"
+        android:text="@string/view_event_button"
         android:id="@+id/viewEvent_Button"
         android:layout_below="@+id/success_textView"
         android:layout_centerHorizontal="true"
@@ -43,8 +43,7 @@
         android:text="@string/quit_button"
         android:id="@+id/quit_Button"
         android:layout_marginBottom="74dp"
+        android:onClick="quitApp"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/addAdditionalEvent_Button"
-        android:layout_alignStart="@+id/addAdditionalEvent_Button"
-        android:onClick="quitApp"/>
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
