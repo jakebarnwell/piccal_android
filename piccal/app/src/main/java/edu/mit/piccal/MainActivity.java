@@ -30,17 +30,6 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
-import org.bytedeco.javacpp.opencv_highgui;
-import org.bytedeco.javacpp.opencv_imgproc;
-import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.opencv_photo;
-import org.bytedeco.javacpp.opencv_calib3d;
-import org.bytedeco.javacpp.opencv_objdetect;
-import org.bytedeco.javacpp.opencv_imgcodecs;
-import org.bytedeco.javacpp.opencv_features2d;
-
-
 
 
 //import com.google.api.client.auth.oauth2.Credential;
@@ -62,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
     static final int REQUEST_TAKE_PHOTO = 1;
     File photoFile = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
+
         Log.i(TAG, "onResume: " + this);
     }
 
@@ -159,5 +150,4 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Log.i(TAG, "photo path = " + mCurrentPhotoPath);
         return image;
     }
-
 }

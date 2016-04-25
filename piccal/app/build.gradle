@@ -19,6 +19,13 @@ android {
     }
 }
 
+//repositories {
+//    maven {
+//        //url 'https://raw.github.com/vRallev/mvn-repo/master/'
+//    }
+//}
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -26,8 +33,9 @@ dependencies {
     compile 'com.android.support:design:22.2.1'
     //compile project(':libraries:tess-two')
     compile 'com.rmtheis:tess-two:5.4.1'
-    compile 'org.bytedeco.javacpp-presets:opencv:3.0.0-1.1'
-//    compile 'com.google.apis:google-api-services-calendar:v3-rev178-1.21.0'
-//    compile 'com.google.appengine:appengine:1.9.36'
-//    compile 'com.google.appengine:gradle-appengine-plugin:1.9.34'
+    //    compile 'com.google.apis:google-api-services-calendar:v3-rev178-1.21.0'
+    //    compile 'com.google.appengine:appengine:1.9.36'
+    //    compile 'com.google.appengine:gradle-appengine-plugin:1.9.34'
+    //compile 'org.opencv:opencv-android:2.4.8'
+    compile project(':libraries:opencv')
 }
