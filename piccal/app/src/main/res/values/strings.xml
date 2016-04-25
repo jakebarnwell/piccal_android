@@ -6,4 +6,7 @@
     <string name="upload_server">Upload</string>
     <string name="uploaded">Successfully uploaded</string>
     <string name="title_activity_camera_overlay">CameraOverlayActivity</string>
+    <string name="success_msg_textView">SUCCESS! Even has been added to calendar!</string>
+    <string name="add_additional_event_button">Add Additional Event</string>
+    <string name="quit_button">Quit</string>
 </resources>
