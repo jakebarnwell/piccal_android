@@ -177,7 +177,6 @@ public class PiccalCalendar {
             e.printStackTrace();
         }
 
-
         result[0] = date.getTime();
         result[1] = date.getTime() + (1000 * 60 * 60);
         Log.d(L, Long.toString(result[0]));
