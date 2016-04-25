@@ -38,6 +38,7 @@ public class PiccalCalendar {
         boolean toTime_found = false, fromTime_found = false;
 
         String the_month = null, the_day = null, the_year = null;
+        text = text.toLowerCase();
 
         // The Matcher object
         Matcher m;
