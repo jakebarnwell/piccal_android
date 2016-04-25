@@ -135,7 +135,7 @@ public class EditResultActivity extends AppCompatActivity {
                 ExifInterface.ORIENTATION_UNDEFINED);
 
         Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
-        bitmap.recycle();
+        //bitmap.recycle();
         return rotatedBMP;
     }
 
@@ -200,7 +200,7 @@ public class EditResultActivity extends AppCompatActivity {
         }
         try {
             Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            bitmap.recycle();
+            //bitmap.recycle();
             return bmRotated;
         }
         catch (OutOfMemoryError e) {
