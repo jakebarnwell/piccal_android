@@ -62,6 +62,8 @@ public class EditResultActivity extends AppCompatActivity {
     private ImageView mImageView;
     private boolean mPicLoaded;
 
+    private Bitmap bmp_imagePreview;
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -115,12 +117,20 @@ public class EditResultActivity extends AppCompatActivity {
 
         if (!mPicLoaded) {
             Bitmap rotatedBitmap = getRotatedBitmap();
-            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap);
+            bmp_imagePreview = rotatedBitmap;
+            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap, mImageView);
             mImageView.setImageBitmap(scaledBitmap);
 
             new ExtractTextTask().execute(mCurrentPhotoPath);
             mPicLoaded = true;
         }
+    }
+
+    public void viewPopupImage(View view) {
+        ImageView popupIV = (ImageView) findViewById(R.id.iv_popup);
+        popupIV.setVisibility(View.VISIBLE);
+        Bitmap scaledBitmap = getImageViewBitmap(bmp_imagePreview, popupIV);
+        popupIV.setImageBitmap(bmp_imagePreview);
     }
 
     private Bitmap getRotatedBitmap(){
@@ -143,9 +153,11 @@ public class EditResultActivity extends AppCompatActivity {
         return rotatedBMP;
     }
 
-    private Bitmap getImageViewBitmap(Bitmap rotatedBitmap){
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
+    private Bitmap getImageViewBitmap(Bitmap rotatedBitmap, ImageView imview){
+        int targetW = imview.getWidth();
+        int targetH = imview.getHeight();
+        String s = "w, h = " + targetW + ", " + targetH;
+        Log.d(TAG, s);
 
         Bitmap resizedBitmap = getResizedBitmap(rotatedBitmap, targetW, targetH);
         return resizedBitmap;
