@@ -38,5 +38,5 @@ dependencies {
     //    compile 'com.google.appengine:gradle-appengine-plugin:1.9.34'
     //compile 'org.opencv:opencv-android:2.4.8'
     compile project(':libraries:opencv')
-    compile 'com.joestelmach:natty:0.12'
+    compile 'org.graylog2.repackaged:natty:0.8-1'
 }
