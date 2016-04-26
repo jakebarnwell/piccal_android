@@ -1,7 +1,21 @@
 package edu.mit.piccal;
 
-/**
- * Created by SK on 25/4/16.
- */
+import java.util.Date;
+
 public class Event {
+
+    Date start;
+    Date end;
+    String location;
+    String title;
+    String description;
+
+    public Event() {
+        start = new Date();
+        end = new Date();
+        location = new String();
+        title = new String();
+        description = new String();
+    }
+
 }
