@@ -465,21 +465,38 @@ public class EditResultActivity extends AppCompatActivity {
 
 
     private void populateTextEdits(String ocrText) {
-        PiccalCalendar cal = new PiccalCalendar(this);
-        Date[] start_end = cal.extractDateInfo(ocrText);
+//        PiccalCalendar cal = new PiccalCalendar(this);
+//        Date[] start_end = cal.extractDateInfo(ocrText);
+//
+//        Date date = start_end[0];
+//        Log.d(TAG, "Setting DatePicker to Date " + date.toString() + " (epoch time = " + Long.toString(date.getTime()) + ")");
+//        Calendar temp = Calendar.getInstance();
+//        temp.setTime(date);
+//        int year = temp.get(Calendar.YEAR), month = temp.get(Calendar.MONTH), day = temp.get(Calendar.DATE);
+//        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
+//        ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
+//        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(12);
+//        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(0);
+//
+//        EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
+//        titleEditText.setText(ocrText);
 
-        Date date = start_end[0];
-        Log.d(TAG, "Setting DatePicker to Date " + date.toString() + " (epoch time = " + Long.toString(date.getTime()) + ")");
-        Calendar temp = Calendar.getInstance();
-        temp.setTime(date);
-        int year = temp.get(Calendar.YEAR), month = temp.get(Calendar.MONTH), day = temp.get(Calendar.DATE);
+
+        EventExtractor ee = new EventExtractor();
+        Event event = ee.extractInfoFromPoster(ocrText);
+        int year = event.start.getYear();
+        int month = event.start.getMonth();
+        int day = event.start.getDay();
+        int hour = event.start.getHours();
+        int mins = event.start.getMinutes();
         Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
         ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
-        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(12);
-        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(0);
+        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(hour);
+        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(mins);
 
         EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);
+
     }
 
 

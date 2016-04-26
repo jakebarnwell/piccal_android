@@ -2,10 +2,8 @@ package edu.mit.piccal;
 
 
 
-import java.util.Calendar;
 import java.util.*;
 import com.joestelmach.natty.*;
-
 
 
 public class EventExtractor {
@@ -41,7 +39,7 @@ public class EventExtractor {
             // get first date in the list
             Date startDate = dates.get(0);
 
-            // initialise end date
+            // initialis
             Date endDate = new Date(startDate.getYear(),startDate.getMonth(),startDate.getDate());
 
             // if there is more that one date in the group, the set the end date as the second object.
