@@ -136,7 +136,7 @@
         android:text="Add to Calendar!"
         android:id="@+id/btn_add2Calendar"
         android:onClick="addToCalendar"
-        android:layout_above="@+id/hr"
+        android:layout_above="@+id/text_frame"
         android:layout_alignRight="@+id/iv_popup"
         android:layout_alignEnd="@+id/iv_popup"
         android:background="#b4e59d"
@@ -149,28 +149,27 @@
         android:text="Take New Picture"
         android:id="@+id/btn_retry"
         android:onClick="retakePicture"
-        android:layout_above="@+id/hr"
+        android:layout_above="@+id/text_frame"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:background="#eeadad"
         android:paddingLeft="10dp"
         android:paddingRight="10dp" />
 
-    <View
-        android:layout_above="@+id/text_frame"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:id="@+id/hr"
-        android:background="@android:color/darker_gray"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/text_frame"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/iv_popup" >
+        android:layout_alignBottom="@+id/iv_popup"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
+
+        <View
+            android:layout_above="@+id/text_viewImage"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:id="@+id/hr"
+            android:background="@android:color/darker_gray" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -180,7 +179,8 @@
             android:id="@+id/text_viewImage"
             android:layout_centerHorizontal="true"
             android:textSize="16dp"
-            android:layout_gravity="center_horizontal|top" />
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="@dimen/activity_vertical_margin" />
     </FrameLayout>
 
 </RelativeLayout>
