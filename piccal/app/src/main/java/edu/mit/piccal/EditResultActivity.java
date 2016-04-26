@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -101,7 +102,7 @@ public class EditResultActivity extends AppCompatActivity {
         mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
         mPicLoaded = false;
 
-        // Set onTouch listneer for view-popup-image button
+        // Set onTouch listener for view-popup-image button
         TextView viewImageText = (TextView)findViewById(R.id.text_viewImage);
         ((FrameLayout)findViewById(R.id.text_frame)).setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -127,6 +128,10 @@ public class EditResultActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        // Set up the Date pickers
+        ((DatePicker)findViewById(R.id.datePicker)).setCalendarViewShown(false);
+
     }
 
     @Override
