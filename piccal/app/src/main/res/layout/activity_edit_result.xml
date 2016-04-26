@@ -168,8 +168,10 @@
         android:layout_below="@+id/linearLayout"
         android:calendarViewShown="false"
         android:layout_alignParentLeft="true"
+        android:startYear="1970"
         android:scaleX="0.75"
         android:scaleY="0.75" />
+    <!-- Note startYear=1970 to prevent issues with epoch time -->
 
     <TimePicker
         android:layout_width="wrap_content"

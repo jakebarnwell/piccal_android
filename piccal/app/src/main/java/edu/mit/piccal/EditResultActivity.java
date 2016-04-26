@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class EditResultActivity extends AppCompatActivity {
@@ -130,8 +131,7 @@ public class EditResultActivity extends AppCompatActivity {
             }
         });
 
-        // Set up the Date pickers
-//        ((DatePicker)findViewById(R.id.datePicker)).setCalendarViewShown(false);
+        // Set Time Picker to be 24 hour mode (takes less space)
         ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
 
     }
@@ -348,19 +348,23 @@ public class EditResultActivity extends AppCompatActivity {
         String title = ((EditText) findViewById(R.id.editTextTitle)).getText().toString();
         String descr = ((EditText) findViewById(R.id.editTextDescription)).getText().toString();
         String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
-//        String string_date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
-        String string_date = "";
-        Date date = new Date();
-        try {
-            date = new SimpleDateFormat("dd/mm/yyyy").parse(string_date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        long startTime = date.getTime();
-        long endTime = startTime + (1000 * 3600);
+
+        DatePicker dp = (DatePicker)findViewById(R.id.datePicker);
+        TimePicker tp = (TimePicker)findViewById(R.id.timePicker);
+        int year = dp.getYear(), month = dp.getMonth(), day = dp.getDayOfMonth();
+        int hour = tp.getCurrentHour(), minute = tp.getCurrentMinute();
+        Log.d(TAG, "From date picker, extracted (year,month,day,hour,min) = ("
+                + year + "," + month + "," + day + "," + hour + "," + minute + ")");
+
+        Date date = new Date(year, month, day, hour, minute);
+        Calendar temp = Calendar.getInstance();
+        temp.set(year, month, day, hour, minute);
+        Log.d(TAG, "Adding Date " + temp.toString() + " (epoch time = " + Long.toString(temp.getTimeInMillis()) + ") to calendar");
+
+        long startTime = temp.getTimeInMillis();
+        long endTime = startTime + (1000L * 3600L);
 
         Intent dispatchedEvent = addEvent(title, startTime, endTime, descr, loc);
-
     }
 
     public Intent addEvent(String title, long start_time, long end_time, String descr, String loc) {
@@ -462,11 +466,17 @@ public class EditResultActivity extends AppCompatActivity {
 
     private void populateTextEdits(String ocrText) {
         PiccalCalendar cal = new PiccalCalendar(this);
-        long[] epochTimes = cal.extractDateInfo(ocrText);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        String date = sdf.format(new Date(epochTimes[0]));
-//        EditText dateEditText = (EditText) findViewById(R.id.editTextDate);
-//        dateEditText.setText(date);
+        Date[] start_end = cal.extractDateInfo(ocrText);
+
+        Date date = start_end[0];
+        Log.d(TAG, "Setting DatePicker to Date " + date.toString() + " (epoch time = " + Long.toString(date.getTime()) + ")");
+        Calendar temp = Calendar.getInstance();
+        temp.setTime(date);
+        int year = temp.get(Calendar.YEAR), month = temp.get(Calendar.MONTH), day = temp.get(Calendar.DATE);
+        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
+        ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
+        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(12);
+        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(0);
 
         EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);
