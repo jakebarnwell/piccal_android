@@ -33,4 +33,4 @@ local.properties
 *.swp
 
 # Libraries
-piccal/libraries/*
+./piccal/libraries/opencv
