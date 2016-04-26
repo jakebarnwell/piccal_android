@@ -39,13 +39,13 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp" />
 
-    <DatePicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/datePicker"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+    <!--<DatePicker-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/datePicker"-->
+        <!--android:layout_below="@+id/textView"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true" />-->
 
 
 </RelativeLayout>

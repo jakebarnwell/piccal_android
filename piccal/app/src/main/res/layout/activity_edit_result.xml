@@ -164,7 +164,6 @@
         android:layout_height="36dp"
         android:text="View Image"
         android:id="@+id/btn_viewImage"
-        android:onClick="viewPopupImage"
         android:layout_row="6"
         android:layout_column="1"
         android:layout_alignParentBottom="true"

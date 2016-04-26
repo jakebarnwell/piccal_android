@@ -16,7 +16,9 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -60,9 +62,11 @@ public class EditResultActivity extends AppCompatActivity {
     private TessBaseAPI baseApi = new TessBaseAPI();
 
     private ImageView mImageView;
+    private ImageView mPopupImageView;
     private boolean mPicLoaded;
 
-    private Bitmap bmp_imagePreview;
+
+    private boolean popupShowing = false;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -94,7 +98,34 @@ public class EditResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_result);
         mImageView = (ImageView) findViewById(R.id.imageview);
+        mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
         mPicLoaded = false;
+
+        // Set onTouch listneer for view-popup-image button
+        ((Button)findViewById(R.id.btn_viewImage)).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        if(!popupShowing) {
+                            mPopupImageView.bringToFront();
+                            mPopupImageView.setVisibility(View.VISIBLE);
+                            popupShowing = true;
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if(popupShowing) {
+                            mPopupImageView.setVisibility(View.INVISIBLE);
+                            popupShowing = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -117,9 +148,12 @@ public class EditResultActivity extends AppCompatActivity {
 
         if (!mPicLoaded) {
             Bitmap rotatedBitmap = getRotatedBitmap();
-            bmp_imagePreview = rotatedBitmap;
+
             Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap, mImageView);
             mImageView.setImageBitmap(scaledBitmap);
+
+            scaledBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
+            mPopupImageView.setImageBitmap(scaledBitmap);
 
             new ExtractTextTask().execute(mCurrentPhotoPath);
             mPicLoaded = true;
@@ -127,10 +161,8 @@ public class EditResultActivity extends AppCompatActivity {
     }
 
     public void viewPopupImage(View view) {
-        ImageView popupIV = (ImageView) findViewById(R.id.iv_popup);
-        popupIV.setVisibility(View.VISIBLE);
-        Bitmap scaledBitmap = getImageViewBitmap(bmp_imagePreview, popupIV);
-        popupIV.setImageBitmap(bmp_imagePreview);
+        mPopupImageView.bringToFront();
+        mPopupImageView.setVisibility(View.VISIBLE);
     }
 
     private Bitmap getRotatedBitmap(){
