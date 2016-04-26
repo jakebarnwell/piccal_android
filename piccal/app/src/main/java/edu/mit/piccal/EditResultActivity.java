@@ -465,31 +465,20 @@ public class EditResultActivity extends AppCompatActivity {
 
 
     private void populateTextEdits(String ocrText) {
-//        PiccalCalendar cal = new PiccalCalendar(this);
-//        Date[] start_end = cal.extractDateInfo(ocrText);
-//
-//        Date date = start_end[0];
-//        Log.d(TAG, "Setting DatePicker to Date " + date.toString() + " (epoch time = " + Long.toString(date.getTime()) + ")");
-//        Calendar temp = Calendar.getInstance();
-//        temp.setTime(date);
-//        int year = temp.get(Calendar.YEAR), month = temp.get(Calendar.MONTH), day = temp.get(Calendar.DATE);
-//        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
-//        ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
-//        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(12);
-//        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(0);
-//
-//        EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
-//        titleEditText.setText(ocrText);
-
-
         EventExtractor ee = new EventExtractor();
         Event event = ee.extractInfoFromPoster(ocrText);
-        int year = event.start.getYear();
-        int month = event.start.getMonth();
-        int day = event.start.getDay();
-        int hour = event.start.getHours();
-        int mins = event.start.getMinutes();
+        Log.d(TAG, "Extracted (start,end) = (" + event.start.toString() + "," + event.end.toString() + ")" +
+                " from EventExtractor");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(event.start);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DATE);
+        int hour = cal.get(Calendar.HOUR);
+        int mins = cal.get(Calendar.MINUTE);
         Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
+        Log.d(TAG, "Setting TimePicker (hour,minute) to (" + hour + "," + mins + ")");
+
         ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
         ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(hour);
         ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(mins);
