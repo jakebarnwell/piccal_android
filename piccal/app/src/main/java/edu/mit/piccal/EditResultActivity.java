@@ -20,8 +20,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -61,7 +63,6 @@ public class EditResultActivity extends AppCompatActivity {
     public static final String LANG = "eng";
     private TessBaseAPI baseApi = new TessBaseAPI();
 
-    private ImageView mImageView;
     private ImageView mPopupImageView;
     private boolean mPicLoaded;
 
@@ -97,12 +98,12 @@ public class EditResultActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_result);
-        mImageView = (ImageView) findViewById(R.id.imageview);
         mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
         mPicLoaded = false;
 
         // Set onTouch listneer for view-popup-image button
-        ((Button)findViewById(R.id.btn_viewImage)).setOnTouchListener(new View.OnTouchListener() {
+        TextView viewImageText = (TextView)findViewById(R.id.text_viewImage);
+        ((FrameLayout)findViewById(R.id.text_frame)).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -149,11 +150,13 @@ public class EditResultActivity extends AppCompatActivity {
         if (!mPicLoaded) {
             Bitmap rotatedBitmap = getRotatedBitmap();
 
-            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap, mImageView);
-            mImageView.setImageBitmap(scaledBitmap);
-
-            scaledBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
+            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
             mPopupImageView.setImageBitmap(scaledBitmap);
+
+            // Recycle the rotatedBitmap if it's not being used to draw
+            if(rotatedBitmap != scaledBitmap) {
+                rotatedBitmap.recycle();
+            }
 
             new ExtractTextTask().execute(mCurrentPhotoPath);
             mPicLoaded = true;
