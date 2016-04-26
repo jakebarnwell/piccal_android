@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -130,7 +131,8 @@ public class EditResultActivity extends AppCompatActivity {
         });
 
         // Set up the Date pickers
-        ((DatePicker)findViewById(R.id.datePicker)).setCalendarViewShown(false);
+//        ((DatePicker)findViewById(R.id.datePicker)).setCalendarViewShown(false);
+        ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
 
     }
 
@@ -346,8 +348,8 @@ public class EditResultActivity extends AppCompatActivity {
         String title = ((EditText) findViewById(R.id.editTextTitle)).getText().toString();
         String descr = ((EditText) findViewById(R.id.editTextDescription)).getText().toString();
         String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
-        String string_date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
-
+//        String string_date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
+        String string_date = "";
         Date date = new Date();
         try {
             date = new SimpleDateFormat("dd/mm/yyyy").parse(string_date);
@@ -463,8 +465,8 @@ public class EditResultActivity extends AppCompatActivity {
         long[] epochTimes = cal.extractDateInfo(ocrText);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String date = sdf.format(new Date(epochTimes[0]));
-        EditText dateEditText = (EditText) findViewById(R.id.editTextDate);
-        dateEditText.setText(date);
+//        EditText dateEditText = (EditText) findViewById(R.id.editTextDate);
+//        dateEditText.setText(date);
 
         EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);
