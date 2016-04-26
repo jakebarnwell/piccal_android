@@ -9,20 +9,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.mit.piccal.EditResultActivity">
 
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/iv_popup"
+        android:visibility="invisible" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true">
-
-        <ImageView
-            android:id="@+id/imageview"
-            android:layout_width="fill_parent"
-            android:layout_height="170dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="10dp" />
+        android:layout_centerHorizontal="true"
+        android:id="@+id/linearLayout">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -31,9 +30,9 @@
 
             <GridLayout
                 android:layout_width="wrap_content"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:columnCount="2"
-                android:rowCount="5"
+                android:rowCount="4"
                 android:nestedScrollingEnabled="false"
                 android:layout_weight="1"
                 android:useDefaultMargins="true">
@@ -64,31 +63,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Date:"
-                    android:id="@+id/textViewDate"
-                    android:layout_row="1"
-                    android:layout_column="0"
-                    android:layout_columnSpan="1"
-                    android:layout_rowSpan="1" />
-
-                <EditText
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/editTextDate"
-                    android:layout_row="1"
-                    android:layout_column="1"
-                    android:editable="true"
-                    android:singleLine="true"
-                    android:layout_columnSpan="1"
-                    android:layout_rowSpan="1" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Location:"
                     android:id="@+id/textViewLocation"
-                    android:layout_row="2"
+                    android:layout_row="1"
                     android:layout_column="0"
                     android:layout_columnSpan="1"
                     android:layout_rowSpan="1" />
@@ -97,7 +74,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/editTextLocation"
-                    android:layout_row="2"
+                    android:layout_row="1"
                     android:layout_column="1"
                     android:editable="true"
                     android:singleLine="true"
@@ -108,9 +85,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Description:"
+                    android:text="Details:"
                     android:id="@+id/textViewDescription"
-                    android:layout_row="3"
+                    android:layout_row="2"
                     android:layout_column="0"
                     android:layout_columnSpan="1"
                     android:layout_rowSpan="1" />
@@ -119,38 +96,92 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/editTextDescription"
-                    android:layout_row="3"
+                    android:layout_row="2"
                     android:layout_column="1"
                     android:editable="true"
                     android:singleLine="true"
                     android:layout_columnSpan="1"
                     android:layout_rowSpan="1" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add to Calendar"
-                    android:id="@+id/button"
-                    android:layout_column="0"
-                    android:layout_row="4"
-                    android:layout_columnSpan="1"
-                    android:layout_rowSpan="1"
-                    android:onClick="addToCalendar"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Retry"
-                    android:id="@+id/button2"
-                    android:layout_row="4"
-                    android:layout_column="1"
-                    android:layout_columnSpan="1"
-                    android:layout_rowSpan="1"
-                    android:onClick="retakePicture"/>
-
             </GridLayout>
         </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add to Calendar!"
+        android:id="@+id/btn_add2Calendar"
+        android:onClick="addToCalendar"
+        android:layout_above="@+id/text_frame"
+        android:layout_alignRight="@+id/iv_popup"
+        android:layout_alignEnd="@+id/iv_popup"
+        android:background="#b4e59d"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Take New Picture"
+        android:id="@+id/btn_retry"
+        android:onClick="retakePicture"
+        android:layout_above="@+id/text_frame"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#eeadad"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_frame"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@+id/iv_popup"
+        android:layout_marginTop="@dimen/activity_vertical_margin">
+
+        <View
+            android:layout_above="@+id/text_viewImage"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:id="@+id/hr"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/viewImage_text_height"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Touch and hold here to view image"
+            android:id="@+id/text_viewImage"
+            android:layout_centerHorizontal="true"
+            android:textSize="16dp"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="@dimen/activity_vertical_margin" />
+    </FrameLayout>
+
+    <DatePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/datePicker"
+        android:layout_below="@+id/linearLayout"
+        android:calendarViewShown="false"
+        android:layout_alignParentLeft="true"
+        android:startYear="1970"
+        android:scaleX="0.75"
+        android:scaleY="0.75" />
+    <!-- Note startYear=1970 to prevent issues with epoch time -->
+
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timePicker"
+        android:timePickerMode="spinner"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentRight="true"
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+         />
 
 </RelativeLayout>

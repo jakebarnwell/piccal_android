@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         long startTime = System.currentTimeMillis();
         long endTime = System.currentTimeMillis() + (1000 * 3600); // adds 1 hour
 //        Intent dispatchedIntent = addEvent(title, startTime, endTime, descr, loc);
-        Intent dispatchedIntent = cal.addEvent("unparsed 3/12/14 january");
+        Date[] start_end = cal.extractDateInfo("unparsed 3/12/14 january");
     }
 
     @Override

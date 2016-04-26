@@ -16,10 +16,16 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -41,6 +47,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class EditResultActivity extends AppCompatActivity {
@@ -48,6 +55,7 @@ public class EditResultActivity extends AppCompatActivity {
     private static final String TAG = "piccal_log";
 
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int ADD_CALENDAR_EVENT = 2;
 
     // Photo path from MainActivity
     String mCurrentPhotoPath;
@@ -58,8 +66,11 @@ public class EditResultActivity extends AppCompatActivity {
     public static final String LANG = "eng";
     private TessBaseAPI baseApi = new TessBaseAPI();
 
-    private ImageView mImageView;
+    private ImageView mPopupImageView;
     private boolean mPicLoaded;
+
+
+    private boolean popupShowing = false;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -90,8 +101,39 @@ public class EditResultActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_result);
-        mImageView = (ImageView) findViewById(R.id.imageview);
+        mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
         mPicLoaded = false;
+
+        // Set onTouch listener for view-popup-image button
+        TextView viewImageText = (TextView)findViewById(R.id.text_viewImage);
+        ((FrameLayout)findViewById(R.id.text_frame)).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        if(!popupShowing) {
+                            mPopupImageView.bringToFront();
+                            mPopupImageView.setVisibility(View.VISIBLE);
+                            popupShowing = true;
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if(popupShowing) {
+                            mPopupImageView.setVisibility(View.INVISIBLE);
+                            popupShowing = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        // Set Time Picker to be 24 hour mode (takes less space)
+        ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
+
     }
 
     @Override
@@ -114,12 +156,23 @@ public class EditResultActivity extends AppCompatActivity {
 
         if (!mPicLoaded) {
             Bitmap rotatedBitmap = getRotatedBitmap();
-            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap);
-            mImageView.setImageBitmap(scaledBitmap);
+
+            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
+            mPopupImageView.setImageBitmap(scaledBitmap);
+
+            // Recycle the rotatedBitmap if it's not being used to draw
+            if(rotatedBitmap != scaledBitmap) {
+                rotatedBitmap.recycle();
+            }
 
             new ExtractTextTask().execute(mCurrentPhotoPath);
             mPicLoaded = true;
         }
+    }
+
+    public void viewPopupImage(View view) {
+        mPopupImageView.bringToFront();
+        mPopupImageView.setVisibility(View.VISIBLE);
     }
 
     private Bitmap getRotatedBitmap(){
@@ -142,9 +195,11 @@ public class EditResultActivity extends AppCompatActivity {
         return rotatedBMP;
     }
 
-    private Bitmap getImageViewBitmap(Bitmap rotatedBitmap){
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
+    private Bitmap getImageViewBitmap(Bitmap rotatedBitmap, ImageView imview){
+        int targetW = imview.getWidth();
+        int targetH = imview.getHeight();
+        String s = "w, h = " + targetW + ", " + targetH;
+        Log.d(TAG, s);
 
         Bitmap resizedBitmap = getResizedBitmap(rotatedBitmap, targetW, targetH);
         return resizedBitmap;
@@ -293,16 +348,21 @@ public class EditResultActivity extends AppCompatActivity {
         String title = ((EditText) findViewById(R.id.editTextTitle)).getText().toString();
         String descr = ((EditText) findViewById(R.id.editTextDescription)).getText().toString();
         String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
-        String string_date = ((EditText) findViewById(R.id.editTextDate)).getText().toString();
 
-        Date date = new Date();
-        try {
-            date = new SimpleDateFormat("dd/mm/yyyy").parse(string_date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        long startTime = date.getTime();
-        long endTime = startTime + (1000 * 3600);
+        DatePicker dp = (DatePicker)findViewById(R.id.datePicker);
+        TimePicker tp = (TimePicker)findViewById(R.id.timePicker);
+        int year = dp.getYear(), month = dp.getMonth(), day = dp.getDayOfMonth();
+        int hour = tp.getCurrentHour(), minute = tp.getCurrentMinute();
+        Log.d(TAG, "From date picker, extracted (year,month,day,hour,min) = ("
+                + year + "," + month + "," + day + "," + hour + "," + minute + ")");
+
+        Date date = new Date(year, month, day, hour, minute);
+        Calendar temp = Calendar.getInstance();
+        temp.set(year, month, day, hour, minute);
+        Log.d(TAG, "Adding Date " + temp.toString() + " (epoch time = " + Long.toString(temp.getTimeInMillis()) + ") to calendar");
+
+        long startTime = temp.getTimeInMillis();
+        long endTime = startTime + (1000L * 3600L);
 
         Intent dispatchedEvent = addEvent(title, startTime, endTime, descr, loc);
     }
@@ -317,7 +377,7 @@ public class EditResultActivity extends AppCompatActivity {
                 .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end_time);
 
         if (intent.resolveActivity(this.getPackageManager()) != null) {
-            this.startActivity(intent);
+            startActivityForResult(intent, ADD_CALENDAR_EVENT);
         }
 
         return intent;
@@ -379,6 +439,10 @@ public class EditResultActivity extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             mPicLoaded = false;
             onWindowFocusChanged(true);
+        } else if (requestCode == ADD_CALENDAR_EVENT) {
+            Log.d(TAG, "Got here");
+            Intent successIntent = new Intent(this, SuccessActivity.class);
+            startActivity(successIntent);
         }
     }
 
@@ -402,11 +466,17 @@ public class EditResultActivity extends AppCompatActivity {
 
     private void populateTextEdits(String ocrText) {
         PiccalCalendar cal = new PiccalCalendar(this);
-        long[] epochTimes = cal.extractDateInfo(ocrText);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        String date = sdf.format(new Date(epochTimes[0]));
-        EditText dateEditText = (EditText) findViewById(R.id.editTextDate);
-        dateEditText.setText(date);
+        Date[] start_end = cal.extractDateInfo(ocrText);
+
+        Date date = start_end[0];
+        Log.d(TAG, "Setting DatePicker to Date " + date.toString() + " (epoch time = " + Long.toString(date.getTime()) + ")");
+        Calendar temp = Calendar.getInstance();
+        temp.setTime(date);
+        int year = temp.get(Calendar.YEAR), month = temp.get(Calendar.MONTH), day = temp.get(Calendar.DATE);
+        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
+        ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
+        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(12);
+        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(0);
 
         EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);

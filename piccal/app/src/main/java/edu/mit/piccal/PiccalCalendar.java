@@ -25,14 +25,7 @@ public class PiccalCalendar {
         context = ctx;
     }
 
-    public Intent addEvent(String unparsedText) {
-        // do stuff
-        long[] event_time = parseDateTime(unparsedText);
-
-        return null;
-    }
-
-    public long[] parseDateTime(String text) {
+    public Date[] parseDateTime(String text) {
         // Stores if we located a day, etc.
         boolean day_found = false, month_found = false, year_found = false;
         boolean toTime_found = false, fromTime_found = false;
@@ -175,31 +168,28 @@ public class PiccalCalendar {
         return dateToLong(the_day, the_month, the_year);
     }
 
-    public long[] dateToLong(String the_day, String the_month, String the_year) {
-
-        long[] result = {0L,0L};
-        if(the_year == null) {
-            the_year = "2016";
-        }
-
+    public Date[] dateToLong(String the_day, String the_month, String the_year) {
         String day = getDay(the_day);
         String month = getMonthName(the_month);
         String year = getYear(the_year);
 
-        Log.d(L, "Date: " + month + ":" + day + ":" + year);
+        Log.d(L, "Attempting to convert (month,day,year) = (" + month + "," + day + "," + year + ") to Date[2]");
 
-        Date date;
+        Date start;
         try {
-            date = new SimpleDateFormat("MMMMddyyyy", Locale.ENGLISH).parse(month + day + year);
+            start = new SimpleDateFormat("MMMMddyyyy", Locale.ENGLISH).parse(month + day + year);
+            Log.d(L, "Successfully parsed date into: " + start.toString());
         } catch (ParseException e) {
-            date = new Date();
+            start = new Date();
+            Log.d(L, "Failed to parse parsed date. Default to current time: " + start.toString());
             e.printStackTrace();
         }
 
-        result[0] = date.getTime();
-        result[1] = date.getTime() + (1000 * 60 * 60);
-        Log.d(L, Long.toString(result[0]));
+        Date end = new Date(start.getTime() + (3600L * 1000L));
 
+        Log.d(L, "start = " + start.toString() + ", end = " + end.toString());
+
+        Date[] result = {start, end};
         return result;
     }
 
@@ -214,7 +204,7 @@ public class PiccalCalendar {
         return result;
     }
 
-    public long[] extractDateInfo(String text) {
+    public Date[] extractDateInfo(String text) {
         return parseDateTime(text);
     }
 
@@ -263,6 +253,14 @@ public class PiccalCalendar {
     }
 
     private String getDay(String regex_day) {
-        return regex_day;
+        if(regex_day == null) {
+            return regex_day;
+        }
+
+        if(regex_day.length() == 2) {
+            return regex_day;
+        } else {
+            return "0" + regex_day;
+        }
     }
 }
