@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.mit.piccal.SuccessActivity">
+    tools:context="edu.mit.piccal.SuccessActivity"
+    android:background="@drawable/white_marble">
 
     <TextView
         android:layout_width="wrap_content"
@@ -15,19 +16,23 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/success_msg_textView"
         android:id="@+id/success_textView"
+        android:gravity="center"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:gravity="center" />
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textStyle="bold" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/view_event_button"
-        android:id="@+id/viewEvent_Button"
-        android:layout_below="@+id/success_textView"
-        android:layout_centerHorizontal="true"
-        android:onClick="viewEvent"
-        android:layout_marginTop="53dp" />
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/view_event_button"-->
+        <!--android:id="@+id/viewEvent_Button"-->
+        <!--android:layout_below="@+id/success_textView"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:onClick="viewEvent"-->
+        <!--android:layout_marginTop="53dp" />-->
 
     <Button
         android:layout_width="wrap_content"
@@ -36,7 +41,11 @@
         android:id="@+id/addAdditionalEvent_Button"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:onClick="addAnotherEvent"/>
+        android:onClick="addAnotherEvent"
+        android:textSize="22dp"
+        android:background="#73cfee"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -46,5 +55,9 @@
         android:layout_marginBottom="74dp"
         android:onClick="quitApp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textSize="22dp"
+        android:background="#f98383"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp" />
 </RelativeLayout>

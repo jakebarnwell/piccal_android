@@ -120,13 +120,19 @@ public class EditResultActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_DOWN:
                         if (!popupShowing) {
                             mPopupImageView.bringToFront();
+                            mPopupImageView.requestLayout();
+                            mPopupImageView.invalidate();
                             mPopupImageView.setVisibility(View.VISIBLE);
+                            ((Button)findViewById(R.id.btn_add2Calendar)).setVisibility(View.INVISIBLE);
+                            ((Button)findViewById(R.id.btn_retry)).setVisibility(View.INVISIBLE);
                             popupShowing = true;
                         }
                         break;
                     case MotionEvent.ACTION_UP:
                         if (popupShowing) {
                             mPopupImageView.setVisibility(View.INVISIBLE);
+                            ((Button)findViewById(R.id.btn_add2Calendar)).setVisibility(View.VISIBLE);
+                            ((Button)findViewById(R.id.btn_retry)).setVisibility(View.VISIBLE);
                             popupShowing = false;
                         }
                         break;
@@ -141,6 +147,7 @@ public class EditResultActivity extends AppCompatActivity {
         ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
         // Set Time Picker to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
+
     }
 
     @Override
@@ -175,11 +182,6 @@ public class EditResultActivity extends AppCompatActivity {
             new ExtractTextTask().execute(mCurrentPhotoPath);
             mPicLoaded = true;
         }
-    }
-
-    public void viewPopupImage(View view) {
-        mPopupImageView.bringToFront();
-        mPopupImageView.setVisibility(View.VISIBLE);
     }
 
     private Bitmap getRotatedBitmap(){
