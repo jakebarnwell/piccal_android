@@ -481,7 +481,18 @@ public class EditResultActivity extends AppCompatActivity {
     }
 
     private class ExtractTextTask extends AsyncTask<String, Integer, String> {
-        protected String doInBackground(String... paths) {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressDialog progDialog = new ProgressDialog(Activity.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(true);
+            progDailog.show();    
+	}
+
+	protected String doInBackground(String... paths) {
             String imagePath = paths[0];
             Bitmap processedBitmap = preprocessOpenCV(imagePath);
             String extractedText = getBitmapText(processedBitmap);
@@ -489,6 +500,7 @@ public class EditResultActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
+            progDialog.dismiss();
             //Context context = getApplicationContext();
             //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
             Log.d(TAG, result.replaceAll("\n", " "));
