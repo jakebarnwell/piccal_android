@@ -67,6 +67,7 @@ public class EditResultActivity extends AppCompatActivity {
             .getExternalStorageDirectory().toString() + "/piccal/";
     public static final String LANG = "eng";
     private TessBaseAPI baseApi = new TessBaseAPI();
+    private OCRService ocrService;
 
     private ImageView mPopupImageView;
     private boolean mPicLoaded;
@@ -101,7 +102,8 @@ public class EditResultActivity extends AppCompatActivity {
             mCurrentPhotoPath = extras.getString("PHOTO_PATH");
         }
 
-        initializeTessBaseApi();
+        ocrService = new OCRService(this);
+//        initializeTessBaseApi();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_result);
@@ -272,83 +274,6 @@ public class EditResultActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap preprocessOpenCV(String photoPath) {
-        Mat original_image = Imgcodecs.imread(photoPath);
-        Imgproc.pyrDown(original_image, original_image);
-        Mat image = new Mat();
-        Imgproc.cvtColor(original_image, image, Imgproc.COLOR_BGRA2GRAY, 1);
-        Size window = new Size(3, 3);
-        Imgproc.GaussianBlur(image, image, window, 0);
-        Imgproc.adaptiveThreshold(image, image, 255, Imgproc.ADAPTIVE_THRESH_GAUSSIAN_C, Imgproc.THRESH_BINARY, 75, 10);
-        Core.bitwise_not(image, image);
-        Log.i(TAG, "Prepressesing Camera Image (END)" + image.size().toString());
-        Bitmap bitmap = Bitmap.createBitmap(image.cols(), image.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(image, bitmap);
-        return bitmap;
-    }
-
-    public String getBitmapText(Bitmap rotatedBMP){
-
-        baseApi.setImage(rotatedBMP);
-        String recognizedText = baseApi.getUTF8Text();
-        baseApi.clear();
-        String cleanText = recognizedText.replaceAll("[^\\w\\s|_]", " ");
-//        cleanText = cleanText.replaceAll("[a-zA-Z0-9]");
-        cleanText = cleanText.replaceAll("( )+", " ");
-        //baseApi.end();
-
-        return cleanText;
-    }
-
-    /**
-     * Initializes tesseract library with the english training data.
-     */
-    private void initializeTessBaseApi(){
-        String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
-
-        for (String path : paths) {
-            File dir = new File(path);
-            if (!dir.exists()) {
-                if (!dir.mkdirs()) {
-                    Log.v(TAG, "ERROR: Creation of directory " + path + " on sdcard failed");
-                    return;
-                } else {
-                    Log.v(TAG, "Created directory " + path + " on sdcard");
-                }
-            }
-
-        }
-
-        if (!(new File(DATA_PATH + "tessdata/" + LANG + ".traineddata")).exists()) {
-            try {
-
-                AssetManager assetManager = getAssets();
-                InputStream in = assetManager.open("tessdata/" + LANG + ".traineddata");
-                //GZIPInputStream gin = new GZIPInputStream(in);
-                OutputStream out = new FileOutputStream(DATA_PATH
-                        + "tessdata/" + LANG + ".traineddata");
-
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                //while ((lenf = gin.read(buff)) > 0) {
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                in.close();
-                //gin.close();
-                out.close();
-
-                Log.v(TAG, "Copied " + LANG + " traineddata");
-            } catch (IOException e) {
-                Log.e(TAG, "Was unable to copy " + LANG + " traineddata " + e.toString());
-            }
-        }
-
-        baseApi.setDebug(true);
-        baseApi.init(DATA_PATH, LANG); // Loads language training data
-    }
-
     public void addToCalendar(View view) {
         String title = ((EditText) findViewById(R.id.editTextTitle)).getText().toString();
         String descr = ((EditText) findViewById(R.id.editTextDescription)).getText().toString();
@@ -481,15 +406,14 @@ public class EditResultActivity extends AppCompatActivity {
     private class ExtractTextTask extends AsyncTask<String, Integer, String> {
         protected String doInBackground(String... paths) {
             String imagePath = paths[0];
-            Bitmap processedBitmap = preprocessOpenCV(imagePath);
-            String extractedText = getBitmapText(processedBitmap);
+            String extractedText = OCRService.extractText(imagePath);
             return extractedText;
         }
 
         protected void onPostExecute(String result) {
             Context context = getApplicationContext();
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            Log.d(TAG, result.replaceAll("\n", " "));
+//            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+//            Log.d(TAG, result.replaceAll("\n", " "));
             super.onPostExecute(result);
             populateTextEdits(result);
         }
