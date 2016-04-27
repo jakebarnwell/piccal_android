@@ -508,12 +508,12 @@ public class EditResultActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
-            progDialog.dismiss();
             //Context context = getApplicationContext();
             //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
             Log.d(TAG, result.replaceAll("\n", " "));
             super.onPostExecute(result);
             populateTextEdits(result);
+            progDialog.dismiss();
         }
     }
 
