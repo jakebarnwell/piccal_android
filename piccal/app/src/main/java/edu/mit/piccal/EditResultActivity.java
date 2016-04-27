@@ -489,8 +489,8 @@ public class EditResultActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
-            Context context = getApplicationContext();
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            //Context context = getApplicationContext();
+            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
             Log.d(TAG, result.replaceAll("\n", " "));
             super.onPostExecute(result);
             populateTextEdits(result);
