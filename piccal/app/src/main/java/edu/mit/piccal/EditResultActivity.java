@@ -1,9 +1,11 @@
 package edu.mit.piccal;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -69,8 +71,10 @@ public class EditResultActivity extends AppCompatActivity {
     private ImageView mPopupImageView;
     private boolean mPicLoaded;
 
-
     private boolean popupShowing = false;
+
+    // Used to help us figure out when a user adds a cal event or not
+    private long calendarEventId;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -112,14 +116,14 @@ public class EditResultActivity extends AppCompatActivity {
                 int action = event.getAction();
                 switch (action) {
                     case MotionEvent.ACTION_DOWN:
-                        if(!popupShowing) {
+                        if (!popupShowing) {
                             mPopupImageView.bringToFront();
                             mPopupImageView.setVisibility(View.VISIBLE);
                             popupShowing = true;
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        if(popupShowing) {
+                        if (popupShowing) {
                             mPopupImageView.setVisibility(View.INVISIBLE);
                             popupShowing = false;
                         }
@@ -133,7 +137,8 @@ public class EditResultActivity extends AppCompatActivity {
 
         // Set Time Picker to be 24 hour mode (takes less space)
         ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
-
+        // Set Time Picker to point to the correct time
+        setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
     }
 
     @Override
@@ -368,6 +373,7 @@ public class EditResultActivity extends AppCompatActivity {
     }
 
     public Intent addEvent(String title, long start_time, long end_time, String descr, String loc) {
+        calendarEventId = getNewEventId(getContentResolver());
         Intent intent = new Intent(Intent.ACTION_INSERT)
                 .setData(CalendarContract.Events.CONTENT_URI)
                 .putExtra(CalendarContract.Events.TITLE, title)
@@ -440,10 +446,36 @@ public class EditResultActivity extends AppCompatActivity {
             mPicLoaded = false;
             onWindowFocusChanged(true);
         } else if (requestCode == ADD_CALENDAR_EVENT) {
-            Log.d(TAG, "Got here");
-            Intent successIntent = new Intent(this, SuccessActivity.class);
-            startActivity(successIntent);
+            long previous_eventId = getLastEventId(getContentResolver());
+            Log.d(TAG, "(newEventId,previousEventId) = (" + calendarEventId + "," + previous_eventId +")");
+
+            // If the IDs are equal, the event was successfully added. Else, the user cancelled.
+            if(previous_eventId == calendarEventId) {
+                // Success screen
+                Intent successIntent = new Intent(this, SuccessActivity.class);
+                startActivity(successIntent);
+            } else {
+                // go back to the previous edit results screen
+                ;
+            }
+
+
         }
+    }
+
+    // From http://stackoverflow.com/questions/9761584/how-can-i-find-out-the-result-of-my-calendar-intent#9925153
+    public static long getNewEventId(ContentResolver cr) {
+        Cursor cursor = cr.query(CalendarContract.Events.CONTENT_URI, new String [] {"MAX(_id) as max_id"}, null, null, "_id");
+        cursor.moveToFirst();
+        long max_val = cursor.getLong(cursor.getColumnIndex("max_id"));
+        return max_val+1;
+    }
+
+    public static long getLastEventId(ContentResolver cr) {
+        Cursor cursor = cr.query(CalendarContract.Events.CONTENT_URI, new String [] {"MAX(_id) as max_id"}, null, null, "_id");
+        cursor.moveToFirst();
+        long max_val = cursor.getLong(cursor.getColumnIndex("max_id"));
+        return max_val;
     }
 
     private class ExtractTextTask extends AsyncTask<String, Integer, String> {
@@ -471,21 +503,28 @@ public class EditResultActivity extends AppCompatActivity {
                 " from EventExtractor");
         Calendar cal = Calendar.getInstance();
         cal.setTime(event.start);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DATE);
-        int hour = cal.get(Calendar.HOUR);
-        int mins = cal.get(Calendar.MINUTE);
-        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
-        Log.d(TAG, "Setting TimePicker (hour,minute) to (" + hour + "," + mins + ")");
-
-        ((DatePicker)findViewById(R.id.datePicker)).updateDate(year, month, day);
-        ((TimePicker)findViewById(R.id.timePicker)).setCurrentHour(hour);
-        ((TimePicker)findViewById(R.id.timePicker)).setCurrentMinute(mins);
+        setTimePicker((TimePicker) findViewById(R.id.timePicker), cal);
+        setDatePicker((DatePicker) findViewById(R.id.datePicker), cal);
 
         EditText titleEditText = (EditText) findViewById(R.id.editTextTitle);
         titleEditText.setText(ocrText);
 
+    }
+
+    private void setTimePicker(TimePicker tp, Calendar c) {
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int mins = c.get(Calendar.MINUTE);
+        tp.setCurrentHour(hour);
+        tp.setCurrentMinute(mins);
+        Log.d(TAG, "Setting TimePicker (hour,minute) to (" + hour + "," + mins + ")");
+    }
+
+    private void setDatePicker(DatePicker dp, Calendar c) {
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DATE);
+        dp.updateDate(year, month, day);
+        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
     }
 
 
