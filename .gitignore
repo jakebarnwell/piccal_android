@@ -34,3 +34,4 @@ local.properties
 
 # Libraries
 ./piccal/libraries/opencv
+piccal/libraries/opencv/build/*
