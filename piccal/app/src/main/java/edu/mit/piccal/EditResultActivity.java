@@ -493,7 +493,7 @@ public class EditResultActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             progDialog = new ProgressDialog(EditResultActivity.this);
-            progDialog.setMessage("Loading...");
+            progDialog.setMessage("Please Wait. Analyzing image...");
             progDialog.setIndeterminate(false);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setCancelable(true);
