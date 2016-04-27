@@ -1,6 +1,7 @@
 package edu.mit.piccal;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -52,6 +53,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+
+
+
 public class EditResultActivity extends AppCompatActivity {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
     private static final String TAG = "piccal_log";
@@ -75,6 +79,10 @@ public class EditResultActivity extends AppCompatActivity {
 
     // Used to help us figure out when a user adds a cal event or not
     private long calendarEventId;
+
+    private ProgressDialog progDialog;
+
+
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -484,12 +492,12 @@ public class EditResultActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            ProgressDialog progDialog = new ProgressDialog(Activity.this);
-            progDailog.setMessage("Loading...");
-            progDailog.setIndeterminate(false);
-            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progDailog.setCancelable(true);
-            progDailog.show();    
+            progDialog = new ProgressDialog(EditResultActivity.this);
+            progDialog.setMessage("Loading...");
+            progDialog.setIndeterminate(false);
+            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDialog.setCancelable(true);
+            progDialog.show();
 	}
 
 	protected String doInBackground(String... paths) {
