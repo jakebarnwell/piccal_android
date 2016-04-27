@@ -38,17 +38,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Welcome to PicCal. Simply take a photo of a poster or flyer advertising an event, and we will add it to your calendar!"
+        android:text="Simply take a photo of a poster or flyer advertising an event, and we will add it to your calendar!"
         android:id="@+id/textView"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="39dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Welcome to PicCal!"
+        android:id="@+id/textView2"
+        android:textColor="#000000"
+        android:textStyle="bold"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="63dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:textColor="#000000"
-        android:textStyle="bold" />
-
-
+        android:layout_marginTop="30dp"
+        android:textSize="24dp" />
 
 
 </RelativeLayout>
