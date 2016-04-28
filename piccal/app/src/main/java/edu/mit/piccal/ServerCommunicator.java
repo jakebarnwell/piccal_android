@@ -24,13 +24,11 @@ public class ServerCommunicator {
     private String mServerURL = "piccal.fandys.com/post/pic/";
     private ProgressDialog mProgDialog;
     private Context mContext;
-    private String TAG = "ServerCommunicator - ";
+    private String TAG = "ServerCommunicator: ";
 
     public ServerCommunicator(Bitmap bitmap){
         mBitmap = bitmap;
     }
-
-
 
     public class Communicator extends AsyncTask<String, Integer, String> {
 
