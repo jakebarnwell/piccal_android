@@ -53,15 +53,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-
-
-
 public class EditResultActivity extends AppCompatActivity {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
     private static final String TAG = "piccal_log";
 
-    static final int REQUEST_TAKE_PHOTO = 1;
-    static final int ADD_CALENDAR_EVENT = 2;
+    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int ADD_CALENDAR_EVENT = 2;
 
     // Photo path from MainActivity
     String mCurrentPhotoPath;
@@ -83,26 +80,6 @@ public class EditResultActivity extends AppCompatActivity {
 
     private ProgressDialog progDialog;
 
-
-
-    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
-        @Override
-        public void onManagerConnected(int status) {
-            switch (status) {
-                case LoaderCallbackInterface.SUCCESS:
-                {
-                    Log.i(TAG, "OpenCV loaded successfully");
-//                    mTakePhoto.setOnClickListener(MainActivity.this);
-                } break;
-                default:
-                {
-                    super.onManagerConnected(status);
-                }
-                break;
-            }
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Bundle extras = getIntent().getExtras();
@@ -110,11 +87,9 @@ public class EditResultActivity extends AppCompatActivity {
             mCurrentPhotoPath = extras.getString("PHOTO_PATH");
         }
 
-        ocrService = new OCRService(this);
-//        initializeTessBaseApi();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_result);
+
         mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
         mPicLoaded = false;
 
@@ -156,20 +131,9 @@ public class EditResultActivity extends AppCompatActivity {
         // Set Time Picker to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
-        if (!OpenCVLoader.initDebug()) {
-            Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_8, this, mLoaderCallback);
-        } else {
-            Log.d(TAG, "OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
+        Bitmap bitmap = getBitmap(mCurrentPhotoPath);
+        ServerCommunicator server = new ServerCommunicator(EditResultActivity.this, this);
+        server.send(bitmap);
     }
 
     @Override
@@ -177,39 +141,45 @@ public class EditResultActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
 
         if (!mPicLoaded) {
-            Bitmap rotatedBitmap = getRotatedBitmap();
+            Bitmap bitmap = getBitmap(mCurrentPhotoPath);
+            Bitmap rotatedBitmap = getRotatedBitmap(bitmap, mCurrentPhotoPath);
+            if(bitmap != rotatedBitmap) bitmap.recycle();
+            Bitmap imviewBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
+            if(rotatedBitmap != imviewBitmap) rotatedBitmap.recycle();
+            mPopupImageView.setImageBitmap(imviewBitmap);
 
-            Bitmap scaledBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
-            mPopupImageView.setImageBitmap(scaledBitmap);
-
-            // Recycle the rotatedBitmap if it's not being used to draw
-            if(rotatedBitmap != scaledBitmap) {
-                rotatedBitmap.recycle();
-            }
-
-            new ExtractTextTask().execute(mCurrentPhotoPath);
             mPicLoaded = true;
         }
     }
 
-    private Bitmap getRotatedBitmap(){
+    private static Bitmap getBitmap(String path) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inPurgeable = true;
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        bmOptions.inSampleSize = 4;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
 
+        return bitmap;
+    }
+
+    private Bitmap getRotatedBitmap(Bitmap bitmap, String path){
         ExifInterface exif = null;
         try {
-            exif = new ExifInterface(mCurrentPhotoPath);
+            exif = new ExifInterface(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
         int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_UNDEFINED);
 
-        Bitmap rotatedBMP = rotateBitmap(bitmap, orientation);
-        //bitmap.recycle();
-        return rotatedBMP;
+        Bitmap rotatedBitmap = do_rotateBitmap(bitmap, orientation);
+
+        // Recycle this bitch
+        if(rotatedBitmap != bitmap) {
+            bitmap.recycle();
+        }
+
+        return rotatedBitmap;
     }
 
     private Bitmap getImageViewBitmap(Bitmap rotatedBitmap, ImageView imview){
@@ -219,6 +189,7 @@ public class EditResultActivity extends AppCompatActivity {
         Log.d(TAG, s);
 
         Bitmap resizedBitmap = getResizedBitmap(rotatedBitmap, targetW, targetH);
+        if(resizedBitmap != rotatedBitmap) rotatedBitmap.recycle();
         return resizedBitmap;
     }
 
@@ -235,13 +206,13 @@ public class EditResultActivity extends AppCompatActivity {
         // "RECREATE" THE NEW BITMAP
         Bitmap resizedBitmap = Bitmap.createBitmap(
                 bm, 0, 0, width, height, matrix, false);
-        //bm.recycle();
+
+        if(resizedBitmap != bm) bm.recycle();
+
         return resizedBitmap;
     }
 
-
-    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
-
+    public static Bitmap do_rotateBitmap(Bitmap bitmap, int orientation) {
         Matrix matrix = new Matrix();
         switch (orientation) {
             case ExifInterface.ORIENTATION_NORMAL:
@@ -275,7 +246,7 @@ public class EditResultActivity extends AppCompatActivity {
         }
         try {
             Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-            //bitmap.recycle();
+            if(bmRotated != bitmap) bitmap.recycle();
             return bmRotated;
         }
         catch (OutOfMemoryError e) {
@@ -412,37 +383,41 @@ public class EditResultActivity extends AppCompatActivity {
         long max_val = cursor.getLong(cursor.getColumnIndex("max_id"));
         return max_val;
     }
+//
+//    private class ExtractTextTask extends AsyncTask<String, Integer, String> {
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progDialog = new ProgressDialog(EditResultActivity.this);
+//            progDialog.setMessage("Please Wait. Analyzing image...");
+//            progDialog.setIndeterminate(false);
+//            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progDialog.setCancelable(true);
+//            progDialog.show();
+//	}
+//
+//	protected String doInBackground(String... paths) {
+//            String imagePath = paths[0];
+//            String extractedText = OCRService.extractText(imagePath);
+//            return extractedText;
+//        }
+//
+//        protected void onPostExecute(String result) {
+//            //Context context = getApplicationContext();
+//            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+//            Log.d(TAG, result.replaceAll("\n", " "));
+//            super.onPostExecute(result);
+//            populateTextEdits(result);
+//            progDialog.dismiss();
+//        }
+//    }
 
-    private class ExtractTextTask extends AsyncTask<String, Integer, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progDialog = new ProgressDialog(EditResultActivity.this);
-            progDialog.setMessage("Please Wait. Analyzing image...");
-            progDialog.setIndeterminate(false);
-            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progDialog.setCancelable(true);
-            progDialog.show();
-	}
-
-	protected String doInBackground(String... paths) {
-            String imagePath = paths[0];
-            String extractedText = OCRService.extractText(imagePath);
-            return extractedText;
-        }
-
-        protected void onPostExecute(String result) {
-            //Context context = getApplicationContext();
-            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            Log.d(TAG, result.replaceAll("\n", " "));
-            super.onPostExecute(result);
-            populateTextEdits(result);
-            progDialog.dismiss();
-        }
+    public void onOcrResult(String ocrText) {
+        Log.d(TAG, "Received OCR result in EditResultActivity.");
     }
 
 
-    private void populateTextEdits(String ocrText) {
+    public void populateTextEdits(String ocrText) {
         EventExtractor ee = new EventExtractor();
         Event event = ee.extractInfoFromPoster(ocrText);
         Log.d(TAG, "Extracted (start,end) = (" + event.start.toString() + "," + event.end.toString() + ")" +

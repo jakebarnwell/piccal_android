@@ -1,6 +1,7 @@
 package edu.mit.piccal;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,30 +19,46 @@ import java.net.URL;
 
 public class ServerCommunicator {
 
-    private Bitmap mBitmap;
-    private String mResult;
-    private String mHeader = " ";
-    private String mServerURL = "piccal.fandys.com/post/pic/";
+    private static final String SERVER_URL = "http://piccal.fandys.com/upload/";
+    private static final String TAG = "ServerCommunicator: ";
+
     private ProgressDialog mProgDialog;
     private Context mContext;
-    private String TAG = "ServerCommunicator: ";
+    private EditResultActivity that;
 
-    public ServerCommunicator(Bitmap bitmap){
-        mBitmap = bitmap;
+    /**
+     * Constructs a new ServerCommunicator object to send images to the server with a given
+     * context and calling activity class.
+     * @param context the context of the calling Activity
+     * @param callingActivity the instance of the activity calling this constructor
+     */
+    public ServerCommunicator(Context context, EditResultActivity callingActivity) {
+        Log.d(TAG, "Creating a ServerCommunicator for context " + context.toString());
+        mContext = context;
+        that = callingActivity;
+    }
+
+    public void send(Bitmap bitmap) {
+        Communicator comm = new Communicator(bitmap);
+        comm.execute();
+    }
+
+    public void shutdown() {
+        ;
     }
 
     public class Communicator extends AsyncTask<String, Integer, String> {
 
-//        Bitmap mBitmap;
+        private final Bitmap mBitmap;
 
-        public Communicator(Context context, Bitmap bitmap) {
-            mContext = context;
-//            mBitmap = bitmap;
+        public Communicator(Bitmap bitmap) {
+            mBitmap = bitmap;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Log.d(TAG, "Sending image to server (pre-execute)");
             mProgDialog = new ProgressDialog(mContext);
             mProgDialog.setMessage("Please Wait. Analyzing image...");
             mProgDialog.setIndeterminate(false);
@@ -51,23 +68,30 @@ public class ServerCommunicator {
         }
 
         protected String doInBackground(String... strings) {
+            Log.d(TAG, "Image sent to server; background.");
 
             String response = null;
             try {
                 response = sendPost(mBitmap);
             } catch (Exception e) {
+                Log.e(TAG, "Error communicating with the server...");
                 e.printStackTrace();
             }
             return response;
         }
 
         protected void onPostExecute(String result) {
-            //Context context = getApplicationContext();
-            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-            Log.d(TAG, result.replaceAll("\n", " "));
             super.onPostExecute(result);
-            mResult = result;
+            mBitmap.recycle();
+
+            if(result != null) {
+                //Context context = getApplicationContext();
+                //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Server result: + " + result.replaceAll("\n", "\\n"));
+            }
+
             mProgDialog.dismiss();
+            that.onOcrResult(result);
         }
 
         // HTTP POST request
@@ -79,10 +103,10 @@ public class ServerCommunicator {
             String twoHyphens = "--";
             String boundary = "*****";
 
-
+            Log.d(TAG, "Attempting to establish HTTP connection...");
             // setup request
             HttpURLConnection httpUrlConnection = null;
-            URL url = new URL(mServerURL);
+            URL url = new URL(SERVER_URL);
             httpUrlConnection = (HttpURLConnection) url.openConnection();
             httpUrlConnection.setUseCaches(false);
             httpUrlConnection.setDoOutput(true);
@@ -127,6 +151,7 @@ public class ServerCommunicator {
             request.flush();
             request.close();
 
+            Log.d(TAG, "Image successfully sent. Waiting for response...");
 
             // get response
             InputStream responseStream = new
@@ -145,13 +170,16 @@ public class ServerCommunicator {
 
             String response = stringBuilder.toString();
 
+            Log.d(TAG, "Response received.");
 
             // close response stream
             responseStream.close();
 
-
             // close connection
             httpUrlConnection.disconnect();
+
+            // recycle bitmap
+            mBitmap.recycle();
 
             return response;
 
