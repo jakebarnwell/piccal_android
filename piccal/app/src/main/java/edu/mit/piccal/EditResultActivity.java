@@ -339,7 +339,7 @@ public class EditResultActivity extends AppCompatActivity {
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
-        Log.i(TAG, "photo path = " + mCurrentPhotoPath);
+        Log.i(TAG, "File created. Photo path = " + mCurrentPhotoPath);
         return image;
     }
 
