@@ -19,7 +19,7 @@ import java.net.URL;
 
 public class ServerCommunicator {
 
-    private static final String SERVER_URL = "http://54.174.172.49/upload/";
+    private static final String SERVER_URL = "http://54.174.172.48/upload/";
     private static final String TAG = "ServerCommunicator: ";
 
     private ProgressDialog mProgDialog;
@@ -97,7 +97,7 @@ public class ServerCommunicator {
         // HTTP POST request
         private String sendPost(Bitmap bitmap) throws Exception {
             // static stuff
-            String attachmentName = "bitmap";
+            String attachmentName = "file";
             String attachmentFileName = "bitmap.bmp";
             String crlf = "\r\n";
             String twoHyphens = "--";
