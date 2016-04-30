@@ -131,7 +131,11 @@ public class EditResultActivity extends AppCompatActivity {
         // Set Time Picker to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
 
-        Bitmap bitmap = getBitmap(mCurrentPhotoPath);
+        sendImageToServerAndWaitForResult(mCurrentPhotoPath);
+    }
+
+    public void sendImageToServerAndWaitForResult(String path) {
+        Bitmap bitmap = getBitmap(path);
         ServerCommunicator server = new ServerCommunicator(EditResultActivity.this, this);
         server.send(bitmap);
     }
@@ -351,6 +355,7 @@ public class EditResultActivity extends AppCompatActivity {
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             mPicLoaded = false;
             onWindowFocusChanged(true);
+            sendImageToServerAndWaitForResult(mCurrentPhotoPath);
         } else if (requestCode == ADD_CALENDAR_EVENT) {
             long previous_eventId = getLastEventId(getContentResolver());
             Log.d(TAG, "(newEventId,previousEventId) = (" + calendarEventId + "," + previous_eventId +")");

@@ -19,7 +19,7 @@ import java.net.URL;
 
 public class ServerCommunicator {
 
-    private static final String SERVER_URL = "http://54.174.172.49/upload/";
+    private static final String SERVER_URL = "http://54.174.172.48/upload/";
     private static final String TAG = "ServerCommunicator: ";
 
     private ProgressDialog mProgDialog;
