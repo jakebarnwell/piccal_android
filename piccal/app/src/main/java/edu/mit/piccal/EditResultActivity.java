@@ -127,7 +127,7 @@ public class EditResultActivity extends AppCompatActivity {
         });
 
         // Set Time Picker to be 24 hour mode (takes less space)
-        ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
+//        ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
         // Set Time Picker to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
 

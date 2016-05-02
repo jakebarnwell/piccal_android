@@ -119,7 +119,8 @@
         android:layout_alignEnd="@+id/iv_popup"
         android:background="#b4e59d"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp" />
+        android:paddingRight="10dp"
+        />
 
     <Button
         android:layout_width="wrap_content"
@@ -170,8 +171,9 @@
         android:datePickerMode="spinner"
         android:layout_alignParentLeft="true"
         android:startYear="1970"
-        android:scaleX="0.75"
-        android:scaleY="0.75" />
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:layout_marginLeft="-25dp" />
     <!-- Note startYear=1970 to prevent issues with epoch time -->
 
     <TimePicker
@@ -181,8 +183,8 @@
         android:timePickerMode="spinner"
         android:layout_below="@+id/linearLayout"
         android:layout_alignParentRight="true"
-        android:scaleX="0.75"
-        android:scaleY="0.75"
-         />
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:layout_marginRight="-25dp" />
 
 </RelativeLayout>
