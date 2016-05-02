@@ -41,23 +41,17 @@ public class ServerCommunicator {
         that = callingActivity;
     }
 
-    public String pathToFile = "";
-    public void send(Bitmap bitmap, String path) {
-        pathToFile = path;
-        Communicator comm = new Communicator(bitmap);
+    public void send(String path) {
+        Communicator comm = new Communicator(path);
         comm.execute();
-    }
-
-    public void shutdown() {
-        ;
     }
 
     public class Communicator extends AsyncTask<String, Integer, String> {
 
-        private final Bitmap mBitmap;
+        private final String mPathToFile;
 
-        public Communicator(Bitmap bitmap) {
-            mBitmap = bitmap;
+        public Communicator(String pathToFile) {
+            this.mPathToFile = pathToFile;
         }
 
         @Override
@@ -77,7 +71,7 @@ public class ServerCommunicator {
 
             String response = null;
             try {
-                response = sendPostJakeTest(pathToFile);
+                response = sendPost(mPathToFile);
             } catch (Exception e) {
                 Log.e(TAG, "Error communicating with the server...");
                 e.printStackTrace();
@@ -87,7 +81,6 @@ public class ServerCommunicator {
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            mBitmap.recycle();
 
             if(result != null) {
                 //Context context = getApplicationContext();
@@ -99,98 +92,7 @@ public class ServerCommunicator {
             that.onOcrResult(result);
         }
 
-        // HTTP POST request
-        private String sendPost(Bitmap bitmap) throws Exception {
-            // static stuff
-            String attachmentName = "file";
-            String attachmentFileName = "bitmap.bmp";
-            String crlf = "\r\n";
-            String twoHyphens = "--";
-            String boundary = "*****";
-
-            Log.d(TAG, "Attempting to establish HTTP connection...");
-            // setup request
-            HttpURLConnection httpUrlConnection = null;
-            URL url = new URL(SERVER_URL);
-            httpUrlConnection = (HttpURLConnection) url.openConnection();
-            httpUrlConnection.setUseCaches(false);
-            httpUrlConnection.setDoOutput(true);
-
-            httpUrlConnection.setRequestMethod("POST");
-            httpUrlConnection.setRequestProperty("Connection", "Keep-Alive");
-            httpUrlConnection.setRequestProperty("Cache-Control", "no-cache");
-            httpUrlConnection.setRequestProperty(
-                    "Content-Type", "multipart/form-data;boundary=" + boundary);
-
-
-            // start content wrapper
-            DataOutputStream request = new DataOutputStream(
-                    httpUrlConnection.getOutputStream());
-
-            request.writeBytes(twoHyphens + boundary + crlf);
-            request.writeBytes("Content-Disposition: form-data; name=\"" +
-                    attachmentName + "\";filename=\"" +
-                    attachmentFileName + "\"" + crlf);
-            request.writeBytes(crlf);
-
-            // convert bitmap to byte buffer
-            //I want to send only 8 bit black & white bitmaps
-            byte[] pixels = new byte[bitmap.getWidth() * bitmap.getHeight()];
-            for (int i = 0; i < bitmap.getWidth(); ++i) {
-                for (int j = 0; j < bitmap.getHeight(); ++j) {
-                    //we're interested only in the MSB of the first byte,
-                    //since the other 3 bytes are identical for B&W images
-                    pixels[i + j] = (byte) ((bitmap.getPixel(i, j) & 0x80) >> 7);
-                }
-            }
-            request.write(pixels);
-
-
-            // end content wrapper
-            request.writeBytes(crlf);
-            request.writeBytes(twoHyphens + boundary +
-                    twoHyphens + crlf);
-
-
-            // flush output buffer
-            request.flush();
-            request.close();
-
-            Log.d(TAG, "Image successfully sent. Waiting for response...");
-
-            // get response
-            InputStream responseStream = new
-                    BufferedInputStream(httpUrlConnection.getInputStream());
-
-            BufferedReader responseStreamReader =
-                    new BufferedReader(new InputStreamReader(responseStream));
-
-            String line = "";
-            StringBuilder stringBuilder = new StringBuilder();
-
-            while ((line = responseStreamReader.readLine()) != null) {
-                stringBuilder.append(line).append("\n");
-            }
-            responseStreamReader.close();
-
-            String response = stringBuilder.toString();
-
-            Log.d(TAG, "Response received.");
-
-            // close response stream
-            responseStream.close();
-
-            // close connection
-            httpUrlConnection.disconnect();
-
-            // recycle bitmap
-            mBitmap.recycle();
-
-            return response;
-
-        }
-
-        private String sendPostJakeTest(String pathToFile) {
+        private String sendPost(String pathToFile) {
             HttpURLConnection connection = null;
             DataOutputStream outputStream = null;
             DataInputStream inputStream = null;
@@ -275,9 +177,6 @@ public class ServerCommunicator {
 
                 // close connection
                 connection.disconnect();
-
-                // recycle bitmap
-                mBitmap.recycle();
 
                 return response;
 
