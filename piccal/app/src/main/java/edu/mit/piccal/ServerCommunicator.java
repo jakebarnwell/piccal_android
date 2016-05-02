@@ -10,7 +10,10 @@ import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -38,7 +41,9 @@ public class ServerCommunicator {
         that = callingActivity;
     }
 
-    public void send(Bitmap bitmap) {
+    public String pathToFile = "";
+    public void send(Bitmap bitmap, String path) {
+        pathToFile = path;
         Communicator comm = new Communicator(bitmap);
         comm.execute();
     }
@@ -68,11 +73,11 @@ public class ServerCommunicator {
         }
 
         protected String doInBackground(String... strings) {
-            Log.d(TAG, "Image sent to server; background.");
+            Log.d(TAG, "Image sending to server; background.");
 
             String response = null;
             try {
-                response = sendPost(mBitmap);
+                response = sendPostJakeTest(pathToFile);
             } catch (Exception e) {
                 Log.e(TAG, "Error communicating with the server...");
                 e.printStackTrace();
@@ -183,6 +188,104 @@ public class ServerCommunicator {
 
             return response;
 
+        }
+
+        private String sendPostJakeTest(String pathToFile) {
+            HttpURLConnection connection = null;
+            DataOutputStream outputStream = null;
+            DataInputStream inputStream = null;
+            String pathToOurFile = pathToFile;
+            String urlServer = SERVER_URL;
+            String lineEnd = "\r\n";
+            String twoHyphens = "--";
+            String boundary =  "*****";
+
+            int bytesRead, bytesAvailable, bufferSize;
+            byte[] buffer;
+            int maxBufferSize = 1*1024*1024;
+
+            try {
+                FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile));
+
+                URL url = new URL(urlServer);
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Allow Inputs &amp; Outputs.
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.setUseCaches(false);
+
+                // Set HTTP method to POST.
+                connection.setRequestMethod("POST");
+
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
+                outputStream = new DataOutputStream(connection.getOutputStream());
+                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"" + pathToOurFile + "\"" + lineEnd);
+                outputStream.writeBytes(lineEnd);
+
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                buffer = new byte[bufferSize];
+
+                // Read file
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                while (bytesRead > 0) {
+                    outputStream.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+
+                outputStream.writeBytes(lineEnd);
+                outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                Log.d(TAG, "Done writing image to server.");
+                // Responses from the server (code and message)
+                int serverResponseCode = connection.getResponseCode();
+                String serverResponseMessage = connection.getResponseMessage();
+
+                fileInputStream.close();
+                outputStream.flush();
+                outputStream.close();
+
+                // get response
+                InputStream responseStream = new
+                        BufferedInputStream(connection.getInputStream());
+
+                BufferedReader responseStreamReader =
+                        new BufferedReader(new InputStreamReader(responseStream));
+
+                String line = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((line = responseStreamReader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+                responseStreamReader.close();
+
+                String response = stringBuilder.toString();
+
+                Log.d(TAG, "Response received:\n" + response.replace("\n","\\n"));
+
+                // close response stream
+                responseStream.close();
+
+                // close connection
+                connection.disconnect();
+
+                // recycle bitmap
+                mBitmap.recycle();
+
+                return response;
+
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+
+            return "";
         }
 
     }

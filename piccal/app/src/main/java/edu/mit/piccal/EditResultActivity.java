@@ -137,7 +137,7 @@ public class EditResultActivity extends AppCompatActivity {
     public void sendImageToServerAndWaitForResult(String path) {
         Bitmap bitmap = getBitmap(path);
         ServerCommunicator server = new ServerCommunicator(EditResultActivity.this, this);
-        server.send(bitmap);
+        server.send(bitmap, path);
     }
 
     @Override
