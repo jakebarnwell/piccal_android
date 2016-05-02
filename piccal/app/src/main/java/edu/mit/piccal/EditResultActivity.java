@@ -140,7 +140,7 @@ public class EditResultActivity extends AppCompatActivity {
         progDialog.setIndeterminate(false);
         progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progDialog.setCancelable(true);
-        ServerCommunicator server = new ServerCommunicator(EditResultActivity.this, this, progDialog);
+        ServerCommunicator server = new ServerCommunicator(this, progDialog);
         server.send(path);
     }
 
@@ -148,7 +148,8 @@ public class EditResultActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        if (!mPicLoaded) {
+        // Set the popup image view to store the photo we just took
+        if(!mPicLoaded) {
             Bitmap bitmap = getBitmap(mCurrentPhotoPath);
             Bitmap rotatedBitmap = getRotatedBitmap(bitmap, mCurrentPhotoPath);
             if(bitmap != rotatedBitmap) bitmap.recycle();

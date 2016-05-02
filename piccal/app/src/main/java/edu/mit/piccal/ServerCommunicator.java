@@ -26,18 +26,16 @@ public class ServerCommunicator {
     private static final String TAG = "ServerCommunicator: ";
 
     private ProgressDialog mProgDialog;
-    private Context mContext;
     private EditResultActivity that;
 
     /**
      * Constructs a new ServerCommunicator object to send images to the server with a given
      * context and calling activity class.
-     * @param context the context of the calling Activity
      * @param callingActivity the instance of the activity calling this constructor
+     * @param pd ProgressDialog instance to use
      */
-    public ServerCommunicator(Context context, EditResultActivity callingActivity, ProgressDialog pd) {
-        Log.d(TAG, "Creating a ServerCommunicator for context " + context.toString());
-        mContext = context;
+    public ServerCommunicator(EditResultActivity callingActivity, ProgressDialog pd) {
+        Log.d(TAG, "Creating a ServerCommunicator for Activity " + callingActivity.toString());
         that = callingActivity;
         mProgDialog = pd;
     }
@@ -77,12 +75,6 @@ public class ServerCommunicator {
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
-            if(result != null) {
-                //Context context = getApplicationContext();
-                //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Server result: + " + result.replaceAll("\n", "\\n"));
-            }
 
             // Dismiss the progress dialogue
             try {
