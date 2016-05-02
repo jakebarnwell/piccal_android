@@ -135,7 +135,12 @@ public class EditResultActivity extends AppCompatActivity {
     }
 
     public void sendImageToServerAndWaitForResult(String path) {
-        ServerCommunicator server = new ServerCommunicator(EditResultActivity.this, this);
+        ProgressDialog progDialog = new ProgressDialog(EditResultActivity.this);
+        progDialog.setMessage("Please Wait. Analyzing image...");
+        progDialog.setIndeterminate(false);
+        progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDialog.setCancelable(true);
+        ServerCommunicator server = new ServerCommunicator(EditResultActivity.this, this, progDialog);
         server.send(path);
     }
 
@@ -387,37 +392,10 @@ public class EditResultActivity extends AppCompatActivity {
         long max_val = cursor.getLong(cursor.getColumnIndex("max_id"));
         return max_val;
     }
-//
-//    private class ExtractTextTask extends AsyncTask<String, Integer, String> {
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            progDialog = new ProgressDialog(EditResultActivity.this);
-//            progDialog.setMessage("Please Wait. Analyzing image...");
-//            progDialog.setIndeterminate(false);
-//            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            progDialog.setCancelable(true);
-//            progDialog.show();
-//	}
-//
-//	protected String doInBackground(String... paths) {
-//            String imagePath = paths[0];
-//            String extractedText = OCRService.extractText(imagePath);
-//            return extractedText;
-//        }
-//
-//        protected void onPostExecute(String result) {
-//            //Context context = getApplicationContext();
-//            //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-//            Log.d(TAG, result.replaceAll("\n", " "));
-//            super.onPostExecute(result);
-//            populateTextEdits(result);
-//            progDialog.dismiss();
-//        }
-//    }
 
     public void onOcrResult(String ocrText) {
         Log.d(TAG, "Received OCR result in EditResultActivity.");
+        populateTextEdits(ocrText);
     }
 
 

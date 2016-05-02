@@ -35,10 +35,11 @@ public class ServerCommunicator {
      * @param context the context of the calling Activity
      * @param callingActivity the instance of the activity calling this constructor
      */
-    public ServerCommunicator(Context context, EditResultActivity callingActivity) {
+    public ServerCommunicator(Context context, EditResultActivity callingActivity, ProgressDialog pd) {
         Log.d(TAG, "Creating a ServerCommunicator for context " + context.toString());
         mContext = context;
         that = callingActivity;
+        mProgDialog = pd;
     }
 
     public void send(String path) {
@@ -58,11 +59,6 @@ public class ServerCommunicator {
         protected void onPreExecute() {
             super.onPreExecute();
             Log.d(TAG, "Sending image to server (pre-execute)");
-            mProgDialog = new ProgressDialog(mContext);
-            mProgDialog.setMessage("Please Wait. Analyzing image...");
-            mProgDialog.setIndeterminate(false);
-            mProgDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            mProgDialog.setCancelable(true);
             mProgDialog.show();
         }
 
@@ -88,7 +84,19 @@ public class ServerCommunicator {
                 Log.d(TAG, "Server result: + " + result.replaceAll("\n", "\\n"));
             }
 
-            mProgDialog.dismiss();
+            // Dismiss the progress dialogue
+            try {
+                if ((mProgDialog != null) && mProgDialog.isShowing()) {
+                    mProgDialog.dismiss();
+                }
+            } catch (final IllegalArgumentException e) {
+                // Handle or log or ignore
+            } catch (final Exception e) {
+                // Handle or log or ignore
+            } finally {
+                mProgDialog = null;
+            }
+
             that.onOcrResult(result);
         }
 
