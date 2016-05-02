@@ -369,6 +369,7 @@ public class EditResultActivity extends AppCompatActivity {
             if(previous_eventId == calendarEventId) {
                 // Success screen
                 Intent successIntent = new Intent(this, SuccessActivity.class);
+                successIntent.putExtra("eventId", calendarEventId);
                 startActivity(successIntent);
             } else {
                 // go back to the previous edit results screen
