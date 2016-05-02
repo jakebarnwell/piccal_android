@@ -142,7 +142,10 @@
         android:text="Time:"
         android:id="@+id/textViewTime"
         android:layout_below="@+id/linearLayout"
-        android:padding="10dp" />
+        android:paddingLeft="5dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="-5dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -182,7 +185,8 @@
         android:startYear="1970"
         android:scaleX="0.7"
         android:scaleY="0.7"
-        android:layout_marginLeft="-25dp" />
+        android:layout_marginLeft="-25dp"
+        android:paddingTop="-5dp" />
     <!-- Note startYear=1970 to prevent issues with epoch time -->
 
     <TimePicker
@@ -194,6 +198,7 @@
         android:layout_alignParentRight="true"
         android:scaleX="0.7"
         android:scaleY="0.7"
-        android:layout_marginRight="-25dp" />
+        android:layout_marginRight="-25dp"
+        android:paddingTop="-5dp" />
 
 </RelativeLayout>
