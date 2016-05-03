@@ -108,33 +108,6 @@
 
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add to Calendar!"
-        android:id="@+id/btn_add2Calendar"
-        android:onClick="addToCalendar"
-        android:layout_above="@+id/text_frame"
-        android:layout_alignRight="@+id/iv_popup"
-        android:layout_alignEnd="@+id/iv_popup"
-        android:background="#b4e59d"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Take New Picture"
-        android:id="@+id/btn_retry"
-        android:onClick="retakePicture"
-        android:layout_above="@+id/text_frame"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:background="#eeadad"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -147,32 +120,7 @@
         android:paddingRight="10dp"
         android:paddingBottom="-5dp" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/text_frame"
-        android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/iv_popup"
-        android:layout_marginTop="@dimen/activity_vertical_margin">
 
-        <View
-            android:layout_above="@+id/text_viewImage"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:id="@+id/hr"
-            android:background="@android:color/darker_gray" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/viewImage_text_height"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Touch and hold here to view image"
-            android:id="@+id/text_viewImage"
-            android:layout_centerHorizontal="true"
-            android:textSize="16dp"
-            android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
-    </FrameLayout>
 
     <DatePicker
         android:layout_width="wrap_content"
@@ -200,5 +148,85 @@
         android:scaleY="0.7"
         android:layout_marginRight="-25dp"
         android:paddingTop="-5dp" />
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_popup"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Take New Picture"
+            android:id="@+id/btn_retry"
+            android:onClick="retakePicture"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="#eeadad"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_gravity="left"
+            />
+
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/iv_poster_thumbnail"
+            android:layout_weight="1"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/poster_icon" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add to Calendar!"
+            android:id="@+id/btn_add2Calendar"
+            android:onClick="addToCalendar"
+            android:layout_alignRight="@+id/iv_popup"
+            android:layout_alignEnd="@+id/iv_popup"
+            android:background="#b4e59d"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_gravity="end"
+            />
+
+    </LinearLayout>
+
+
+
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/text_frame"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_alignBottom="@+id/iv_popup"-->
+        <!--android:layout_marginTop="@dimen/activity_vertical_margin">-->
+
+        <!--<View-->
+            <!--android:layout_above="@+id/text_viewImage"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="2dp"-->
+            <!--android:id="@+id/hr"-->
+            <!--android:background="@android:color/darker_gray" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="@dimen/viewImage_text_height"-->
+            <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+            <!--android:text="Touch and hold here to view image"-->
+            <!--android:id="@+id/text_viewImage"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:textSize="16dp"-->
+            <!--android:layout_gravity="center_horizontal|top"-->
+            <!--android:layout_marginTop="@dimen/activity_vertical_margin" />-->
+    <!--</FrameLayout>-->
+
+
 
 </RelativeLayout>

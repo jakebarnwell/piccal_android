@@ -94,8 +94,7 @@ public class EditResultActivity extends AppCompatActivity {
         mPicLoaded = false;
 
         // Set onTouch listener for view-popup-image button
-        TextView viewImageText = (TextView)findViewById(R.id.text_viewImage);
-        ((FrameLayout)findViewById(R.id.text_frame)).setOnTouchListener(new View.OnTouchListener() {
+        ((ImageView)findViewById(R.id.iv_poster_thumbnail)).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
