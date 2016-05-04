@@ -123,32 +123,42 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Time:"
-        android:id="@+id/textViewTime"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="-5dp"
-        android:layout_below="@+id/LL_data"
-        android:layout_centerVertical="@+id/datePicker"
-        />
 
-    <DatePicker
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/datePicker"
-        android:calendarViewShown="false"
-        android:datePickerMode="spinner"
-        android:startYear="1970"
-        android:scaleX="0.8"
-        android:scaleY="0.8"
-        android:layout_centerHorizontal="true"
+        android:id="@+id/LL_datePicker"
         android:layout_below="@+id/LL_data"
         android:layout_marginTop="-30dp"
-        />
+        android:gravity="center_vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Time:"
+            android:id="@+id/textViewTime"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="-5dp"
+            android:layout_below="@+id/LL_data"
+            android:layout_centerVertical="true"
+            />
+
+        <DatePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/datePicker"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            android:startYear="1970"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+
+            />
+    </LinearLayout>
+
 
     <TimePicker
         android:layout_width="wrap_content"
@@ -158,7 +168,7 @@
         android:scaleX="0.7"
         android:scaleY="0.7"
         android:paddingTop="-5dp"
-        android:layout_below="@+id/datePicker"
+        android:layout_below="@+id/LL_datePicker"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="-50dp"
@@ -173,7 +183,7 @@
         android:scaleX="0.7"
         android:scaleY="0.7"
         android:paddingTop="-5dp"
-        android:layout_below="@+id/datePicker"
+        android:layout_below="@+id/LL_datePicker"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="-50dp"
@@ -229,6 +239,8 @@
             android:textSize="15dp" />
 
     </LinearLayout>
+
+
 
 
 </RelativeLayout>
