@@ -137,7 +137,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Time:"
+            android:text="From/To:"
             android:id="@+id/textViewTime"
             android:paddingTop="10dp"
             android:paddingRight="10dp"
@@ -171,20 +171,8 @@
         android:layout_below="@+id/LL_datePicker"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="-50dp"
-        android:layout_marginLeft="-40dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="to"
-        android:id="@+id/textViewTo"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/LL_datePicker"
-        android:layout_marginTop="35dp"
-        />
+        android:layout_marginTop="-65dp"
+        android:layout_marginLeft="-40dp" />
 
     <TimePicker
         android:layout_width="wrap_content"
@@ -197,7 +185,7 @@
         android:layout_below="@+id/LL_datePicker"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="-50dp"
+        android:layout_marginTop="-65dp"
         android:layout_marginRight="-40dp"
 
         />
@@ -208,7 +196,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_popup"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout"
+        android:measureWithLargestChild="false"
+        android:gravity="center_vertical|center">
 
         <Button
             android:layout_width="wrap_content"
@@ -219,15 +209,14 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:background="#eeadad"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:layout_gravity="left"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textSize="15dp" />
 
 
         <ImageView
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="80dp"
             android:id="@+id/iv_poster_thumbnail"
             android:layout_weight="1"
             android:layout_marginLeft="5dp"
@@ -244,9 +233,8 @@
             android:layout_alignRight="@+id/iv_popup"
             android:layout_alignEnd="@+id/iv_popup"
             android:background="#b4e59d"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:layout_gravity="end"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:textSize="15dp" />
 
     </LinearLayout>
