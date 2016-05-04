@@ -129,38 +129,57 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Time:"
         android:id="@+id/textViewTime"
-        android:layout_below="@+id/LL_data"
-        android:paddingLeft="5dp"
         android:paddingTop="10dp"
         android:paddingRight="10dp"
-        android:paddingBottom="-5dp" />
+        android:paddingBottom="-5dp"
+        android:layout_below="@+id/LL_data"
+        android:layout_centerVertical="@+id/datePicker"
+        />
 
     <DatePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/datePicker"
-        android:layout_below="@+id/textViewTime"
         android:calendarViewShown="false"
         android:datePickerMode="spinner"
-        android:layout_alignParentLeft="true"
         android:startYear="1970"
-        android:scaleX="0.7"
-        android:scaleY="0.7"
-        android:layout_marginLeft="-25dp"
-        android:paddingTop="-5dp" />
-    <!-- Note startYear=1970 to prevent issues with epoch time -->
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/LL_data"
+        android:layout_marginTop="-30dp"
+        />
 
     <TimePicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/timePicker"
+        android:id="@+id/timePickerFrom"
         android:timePickerMode="spinner"
-        android:layout_below="@+id/textViewTime"
-        android:layout_alignParentRight="true"
         android:scaleX="0.7"
         android:scaleY="0.7"
-        android:layout_marginRight="-25dp"
-        android:paddingTop="-5dp" />
+        android:paddingTop="-5dp"
+        android:layout_below="@+id/datePicker"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="-50dp"
+        android:layout_marginLeft="-30dp"
+        />
+
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/timePickerTo"
+        android:timePickerMode="spinner"
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:paddingTop="-5dp"
+        android:layout_below="@+id/datePicker"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="-50dp"
+        android:layout_marginRight="-30dp"
+
+        />
 
 
     <LinearLayout
@@ -168,7 +187,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/iv_popup"
-        >
+        android:id="@+id/linearLayout">
 
         <Button
             android:layout_width="wrap_content"
@@ -210,8 +229,6 @@
             android:textSize="15dp" />
 
     </LinearLayout>
-
-
 
 
 </RelativeLayout>

@@ -129,7 +129,8 @@ public class EditResultActivity extends AppCompatActivity {
 
 
         // Set Time Picker to point to the correct time
-        setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
+        setTimePicker((TimePicker)findViewById(R.id.timePickerFrom), Calendar.getInstance());
+        setTimePicker((TimePicker)findViewById(R.id.timePickerTo), Calendar.getInstance());
 
         // Send the image to the server for processing
         sendImageToServerAndWaitForResult(mCurrentPhotoPath);
@@ -289,7 +290,7 @@ public class EditResultActivity extends AppCompatActivity {
         String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
 
         DatePicker dp = (DatePicker)findViewById(R.id.datePicker);
-        TimePicker tp = (TimePicker)findViewById(R.id.timePicker);
+        TimePicker tp = (TimePicker)findViewById(R.id.timePickerFrom);
         int year = dp.getYear(), month = dp.getMonth(), day = dp.getDayOfMonth();
         int hour = tp.getCurrentHour(), minute = tp.getCurrentMinute();
         Log.d(TAG, "From date picker, extracted (year,month,day,hour,min) = ("
@@ -427,7 +428,7 @@ public class EditResultActivity extends AppCompatActivity {
                 " from EventExtractor");
         Calendar cal = Calendar.getInstance();
         cal.setTime(event.start);
-        setTimePicker((TimePicker) findViewById(R.id.timePicker), cal);
+        setTimePicker((TimePicker) findViewById(R.id.timePickerFrom), cal);
         setDatePicker((DatePicker) findViewById(R.id.datePicker), cal);
 
         String[] split_text = ocrText.split("\\s+");
