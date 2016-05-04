@@ -15,13 +15,22 @@
         android:id="@+id/iv_popup"
         android:visibility="invisible" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Edit Event Information:"
+        android:id="@+id/tv_edit_event_info"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:id="@+id/linearLayout">
+        android:layout_below="@+id/tv_edit_event_info"
+        android:id="@+id/LL_data">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -99,7 +108,12 @@
                     android:layout_row="2"
                     android:layout_column="1"
                     android:editable="true"
-                    android:singleLine="true"
+                    android:inputType="textMultiLine"
+                    android:lines="2"
+                    android:minLines="2"
+                    android:maxLength="2"
+                    android:gravity="top|left"
+                    android:scrollbars="vertical"
                     android:layout_columnSpan="1"
                     android:layout_rowSpan="1" />
 
@@ -114,13 +128,11 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Time:"
         android:id="@+id/textViewTime"
-        android:layout_below="@+id/linearLayout"
+        android:layout_below="@+id/LL_data"
         android:paddingLeft="5dp"
         android:paddingTop="10dp"
         android:paddingRight="10dp"
         android:paddingBottom="-5dp" />
-
-
 
     <DatePicker
         android:layout_width="wrap_content"
@@ -160,7 +172,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Take New Picture"
+            android:text="@string/retake_photo"
             android:id="@+id/btn_retry"
             android:onClick="retakePicture"
             android:layout_alignParentLeft="true"
@@ -169,7 +181,7 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:layout_gravity="left"
-            />
+            android:textSize="15dp" />
 
 
         <ImageView
@@ -185,7 +197,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add to Calendar!"
+            android:text="@string/add_to_cal"
             android:id="@+id/btn_add2Calendar"
             android:onClick="addToCalendar"
             android:layout_alignRight="@+id/iv_popup"
@@ -194,38 +206,10 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:layout_gravity="end"
-            />
+            android:textSize="15dp" />
 
     </LinearLayout>
 
-
-
-    <!--<FrameLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/text_frame"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_alignBottom="@+id/iv_popup"-->
-        <!--android:layout_marginTop="@dimen/activity_vertical_margin">-->
-
-        <!--<View-->
-            <!--android:layout_above="@+id/text_viewImage"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="2dp"-->
-            <!--android:id="@+id/hr"-->
-            <!--android:background="@android:color/darker_gray" />-->
-
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="@dimen/viewImage_text_height"-->
-            <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-            <!--android:text="Touch and hold here to view image"-->
-            <!--android:id="@+id/text_viewImage"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:textSize="16dp"-->
-            <!--android:layout_gravity="center_horizontal|top"-->
-            <!--android:layout_marginTop="@dimen/activity_vertical_margin" />-->
-    <!--</FrameLayout>-->
 
 
 

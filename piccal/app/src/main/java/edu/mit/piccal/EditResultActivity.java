@@ -125,11 +125,13 @@ public class EditResultActivity extends AppCompatActivity {
             }
         });
 
-        // Set Time Picker to be 24 hour mode (takes less space)
-//        ((TimePicker)findViewById(R.id.timePicker)).setIs24HourView(true);
+        // Set poster icon to be a thumbnail of the captured image:
+
+
         // Set Time Picker to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePicker), Calendar.getInstance());
 
+        // Send the image to the server for processing
         sendImageToServerAndWaitForResult(mCurrentPhotoPath);
     }
 
@@ -147,7 +149,7 @@ public class EditResultActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        // Set the popup image view to store the photo we just took
+        // Set the popup image view and thumbnail image view to store the photo we just took
         if(!mPicLoaded) {
             Bitmap bitmap = getBitmap(mCurrentPhotoPath);
             Bitmap rotatedBitmap = getRotatedBitmap(bitmap, mCurrentPhotoPath);
@@ -155,6 +157,24 @@ public class EditResultActivity extends AppCompatActivity {
             Bitmap imviewBitmap = getImageViewBitmap(rotatedBitmap, mPopupImageView);
             if(rotatedBitmap != imviewBitmap) rotatedBitmap.recycle();
             mPopupImageView.setImageBitmap(imviewBitmap);
+
+            ImageView posterThumbnail = (ImageView)findViewById(R.id.iv_poster_thumbnail);
+            Bitmap bitmap2 = getBitmap(mCurrentPhotoPath);
+            Bitmap rotatedBitmap2 = getRotatedBitmap(bitmap2, mCurrentPhotoPath);
+            if(bitmap2 != rotatedBitmap2) bitmap2.recycle();
+            int rbw = rotatedBitmap2.getWidth(), rbh = rotatedBitmap2.getHeight();
+            int ptw = posterThumbnail.getWidth(), pth = posterThumbnail.getHeight();
+            double ratio = .1;
+            if(pth < ptw) {
+                ratio = 1.0 * rbh / pth;
+            } else {
+                ratio = 1.0 * rbw / ptw;
+            }
+            int targetW = (int)(rbw / ratio), targetH = (int)(rbh / ratio);
+            String s = "thumbnail target w, h = " + targetW + ", " + targetH; Log.d(TAG, s);
+            Bitmap resizedBitmap = getResizedBitmap(rotatedBitmap2, targetW, targetH);
+            if(resizedBitmap != rotatedBitmap2) rotatedBitmap2.recycle();
+            posterThumbnail.setImageBitmap(resizedBitmap);
 
             mPicLoaded = true;
         }
