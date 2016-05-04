@@ -130,7 +130,9 @@ public class EditResultActivity extends AppCompatActivity {
 
         // Set Time Picker to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePickerFrom), Calendar.getInstance());
-        setTimePicker((TimePicker)findViewById(R.id.timePickerTo), Calendar.getInstance());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.HOUR_OF_DAY, 1);
+        setTimePicker((TimePicker)findViewById(R.id.timePickerTo), cal);
 
         // Send the image to the server for processing
         sendImageToServerAndWaitForResult(mCurrentPhotoPath);
@@ -290,19 +292,26 @@ public class EditResultActivity extends AppCompatActivity {
         String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
 
         DatePicker dp = (DatePicker)findViewById(R.id.datePicker);
-        TimePicker tp = (TimePicker)findViewById(R.id.timePickerFrom);
+        TimePicker tpf = (TimePicker)findViewById(R.id.timePickerFrom);
+        TimePicker tpt = (TimePicker)findViewById(R.id.timePickerTo);
+
         int year = dp.getYear(), month = dp.getMonth(), day = dp.getDayOfMonth();
-        int hour = tp.getCurrentHour(), minute = tp.getCurrentMinute();
-        Log.d(TAG, "From date picker, extracted (year,month,day,hour,min) = ("
-                + year + "," + month + "," + day + "," + hour + "," + minute + ")");
+        int hourFrom = tpf.getCurrentHour(), minuteFrom = tpf.getCurrentMinute();
+        int hourTo = tpt.getCurrentHour(), minuteTo = tpt.getCurrentMinute();
 
-        Date date = new Date(year, month, day, hour, minute);
-        Calendar temp = Calendar.getInstance();
-        temp.set(year, month, day, hour, minute);
-        Log.d(TAG, "Adding Date " + temp.toString() + " (epoch time = " + Long.toString(temp.getTimeInMillis()) + ") to calendar");
+        Log.d(TAG, "From date picker, extracted (year,month,day) = ("
+                + year + "," + month + "," + day + ")");
+        Log.d(TAG, "From time pickers, extracted (hour,min,hour,min) = ("
+                + hourFrom + "," + minuteFrom + "," + hourTo + "," + minuteTo +")");
 
-        long startTime = temp.getTimeInMillis();
-        long endTime = startTime + (1000L * 3600L);
+        Calendar calFrom = Calendar.getInstance();
+        calFrom.set(year, month, day, hourFrom, minuteFrom);
+
+        Calendar calTo = Calendar.getInstance();
+        calTo.set(year, month, day, hourTo, minuteTo);
+
+        long startTime = calFrom.getTimeInMillis();
+        long endTime = calTo.getTimeInMillis();
 
         Intent dispatchedEvent = addEvent(title, startTime, endTime, descr, loc);
     }
@@ -426,10 +435,13 @@ public class EditResultActivity extends AppCompatActivity {
         Event event = ee.extractInfoFromPoster(ocrText);
         Log.d(TAG, "Extracted (start,end) = (" + event.start.toString() + "," + event.end.toString() + ")" +
                 " from EventExtractor");
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(event.start);
-        setTimePicker((TimePicker) findViewById(R.id.timePickerFrom), cal);
-        setDatePicker((DatePicker) findViewById(R.id.datePicker), cal);
+        Calendar calFrom = Calendar.getInstance();
+        calFrom.setTime(event.start);
+        Calendar calTo = Calendar.getInstance();
+        calTo.setTime(event.end);
+        setTimePicker((TimePicker) findViewById(R.id.timePickerFrom), calFrom);
+        setTimePicker((TimePicker) findViewById(R.id.timePickerTo), calTo);
+        setDatePicker((DatePicker) findViewById(R.id.datePicker), calFrom);
 
         String[] split_text = ocrText.split("\\s+");
 
