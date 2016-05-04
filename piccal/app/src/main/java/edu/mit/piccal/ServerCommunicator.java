@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -106,6 +108,15 @@ public class ServerCommunicator {
             byte[] buffer;
             int maxBufferSize = 1*1024*1024;
 
+            ExifInterface exif = null;
+            try {
+                exif = new ExifInterface(pathToFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+
             try {
                 FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile));
 
@@ -143,6 +154,15 @@ public class ServerCommunicator {
                 }
 
                 outputStream.writeBytes(lineEnd);
+
+                // Send orientation
+                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"orientation\""  + lineEnd);
+                outputStream.writeBytes(lineEnd);
+
+                outputStream.writeBytes(Integer.toString(orientation));
+                outputStream.writeBytes(lineEnd);
+
                 outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
                 Log.d(TAG, "Done writing image to server.");
                 // Responses from the server (code and message)
