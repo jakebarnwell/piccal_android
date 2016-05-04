@@ -10,6 +10,6 @@
     <string name="add_additional_event_button">Add Another Event</string>
     <string name="quit_button">Quit</string>
     <string name="view_event_button">View Event in Calendar</string>
-    <string name="retake_photo">↺ Retake Photo</string>
+    <string name="retake_photo">↺ Try Again</string>
     <string name="add_to_cal">Add Event ➡</string>
 </resources>
