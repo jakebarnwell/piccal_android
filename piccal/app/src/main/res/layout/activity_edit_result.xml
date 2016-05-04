@@ -137,7 +137,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Time:"
+            android:text="From/To:"
             android:id="@+id/textViewTime"
             android:paddingTop="10dp"
             android:paddingRight="10dp"
@@ -171,20 +171,8 @@
         android:layout_below="@+id/LL_datePicker"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="-50dp"
-        android:layout_marginLeft="-40dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="to"
-        android:id="@+id/textViewTo"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/LL_datePicker"
-        android:layout_marginTop="35dp"
-        />
+        android:layout_marginTop="-60dp"
+        android:layout_marginLeft="-40dp" />
 
     <TimePicker
         android:layout_width="wrap_content"
@@ -197,7 +185,7 @@
         android:layout_below="@+id/LL_datePicker"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="-50dp"
+        android:layout_marginTop="-60dp"
         android:layout_marginRight="-40dp"
 
         />
