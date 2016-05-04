@@ -128,7 +128,7 @@ public class EditResultActivity extends AppCompatActivity {
         // Set poster icon to be a thumbnail of the captured image:
 
 
-        // Set Time Picker to point to the correct time
+        // Set Time Pickers to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePickerFrom), Calendar.getInstance());
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.HOUR_OF_DAY, 1);
