@@ -84,7 +84,15 @@ public class EditResultActivity extends AppCompatActivity {
     // Stores the event ID (of the event added to the calendar) so we can access it later
     private long calendarEventId;
 
-    private ProgressDialog progDialog;
+    // Stores current from and to times of the event
+    private static final int FROM = 0, TO = 1;
+    private Calendar[] mEventTime = {null, null};
+
+    // Set-time listeners for FROM and TO time pickers:
+    private TimePickerDialog.OnTimeSetListener[] mTimeSetListener = {null, null};
+
+    // Time picker dialogs
+    private TimePickerDialog[] mTimePickerDialog = {null, null};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,22 +146,28 @@ public class EditResultActivity extends AppCompatActivity {
 
         ((EditText)grid.getChildAt(index_setFromTime)).setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
-                Log.d(TAG, "Click edit FROM time");
-                editFromTime();
+                Log.d(TAG, "Editing TO time.");
+                mTimePickerDialog[TO].show();
+
             }
         });
         ((EditText)grid.getChildAt(index_setToTime)).setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
-                Log.d(TAG, "Click edit TO time");
-                editToTime();
+                Log.d(TAG, "Editing TO time.");
+                mTimePickerDialog[TO].show();
             }
         });
 
-        // Set Time Pickers to point to the correct time
-        setTimePicker((TimePicker)findViewById(R.id.timePickerFrom), Calendar.getInstance());
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.HOUR_OF_DAY, 1);
-        setTimePicker((TimePicker)findViewById(R.id.timePickerTo), cal);
+        // Set initial from and to times
+        mEventTime[FROM] = Calendar.getInstance();
+        mEventTime[TO] = Calendar.getInstance();
+        mEventTime[TO].add(Calendar.HOUR_OF_DAY, 1);
+
+        // Create time picker dialogs
+        mTimeSetListener[FROM] = makeTimeSetListener(FROM);
+        mTimeSetListener[TO] = makeTimeSetListener(TO);
+        mTimePickerDialog[FROM] = new TimePickerDialog(this, mTimeSetListener[FROM], 3, 20, false);
+        mTimePickerDialog[TO] = new TimePickerDialog(this, mTimeSetListener[TO], 3, 20, false);
 
         // Send the image to the server for processing
         sendImageToServerAndWaitForResult(mCurrentPhotoPath);
@@ -511,28 +525,17 @@ public class EditResultActivity extends AppCompatActivity {
         Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
     }
 
+    private TimePickerDialog.OnTimeSetListener makeTimeSetListener(final int which) {
+        TimePickerDialog.OnTimeSetListener listener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                Calendar time = mEventTime[which];
+                time.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                time.set(Calendar.MINUTE, minute);
+            }
+        };
 
-    private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            // TODO Auto-generated method stub
-//            mhour = hourOfDay;
-//            mminute = minute;
-//            nexttime = (new StringBuilder().append(mhour).append(":").append(mminute).append(":").append(msecond)).toString();
-//            dateandtime = nextdate+nexttime;
-        }
-    };
-
-    public void editFromTime() {
-        Log.d(TAG, "Editing FROM time.");
-        TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetListener, 3, 20, false);
-        tpd.show();
-    }
-
-    public void editToTime() {
-        Log.d(TAG, "Editing TO time.");
-        TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetListener, 3, 20, false);
-        tpd.show();
+        return listener;
     }
 
 
