@@ -139,24 +139,7 @@ public class EditResultActivity extends AppCompatActivity {
             }
         });
 
-        // Set GridLayout listeners for time pickers:
-        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
-        int index_setFromTime = 7;
-        int index_setToTime = 9;
 
-        ((EditText)grid.getChildAt(index_setFromTime)).setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view) {
-                Log.d(TAG, "Editing TO time.");
-                mTimePickerDialog[TO].show();
-
-            }
-        });
-        ((EditText)grid.getChildAt(index_setToTime)).setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view) {
-                Log.d(TAG, "Editing TO time.");
-                mTimePickerDialog[TO].show();
-            }
-        });
 
         // Set initial from and to times
         mEventTime[FROM] = Calendar.getInstance();
@@ -169,8 +152,49 @@ public class EditResultActivity extends AppCompatActivity {
         mTimePickerDialog[FROM] = new TimePickerDialog(this, mTimeSetListener[FROM], 3, 20, false);
         mTimePickerDialog[TO] = new TimePickerDialog(this, mTimeSetListener[TO], 3, 20, false);
 
+        // Populate Time fields with the initially-created times
+        populateTime(FROM, mEventTime[FROM]);
+        populateTime(TO, mEventTime[TO]);
+
+        // Set GridLayout listeners for time pickers:
+        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
+        int index_setFromTime = 7;
+        int index_setToTime = 9;
+
+        ((EditText)grid.getChildAt(index_setFromTime)).setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "Editing TO time.");
+                TimePickerDialog tpd = makeTimePickerDialog(mEventTime[FROM], mTimeSetListener[FROM]);
+                tpd.show();
+            }
+        });
+        ((EditText)grid.getChildAt(index_setToTime)).setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "Editing TO time.");
+                TimePickerDialog tpd = makeTimePickerDialog(mEventTime[TO], mTimeSetListener[TO]);
+                tpd.show();
+            }
+        });
+
         // Send the image to the server for processing
         sendImageToServerAndWaitForResult(mCurrentPhotoPath);
+    }
+
+    private String populateTime(final int which, Calendar time) {
+        Log.d(TAG, "Setting time " + which + " to: " + time.toString());
+        int editTextId;
+        if(which == FROM) {
+            editTextId = R.id.editTextFrom;
+        } else if(which == TO) {
+            editTextId = R.id.editTextTo;
+        } else {
+            throw new IllegalArgumentException("Illegal value for 'which'. Should be one of FROM or TO.");
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+        String text = formatter.format(time.getTime());
+        ((EditText)findViewById(editTextId)).setText(text);
+        return text;
     }
 
     public void sendImageToServerAndWaitForResult(String path) {
@@ -532,10 +556,19 @@ public class EditResultActivity extends AppCompatActivity {
                 Calendar time = mEventTime[which];
                 time.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 time.set(Calendar.MINUTE, minute);
+                populateTime(which, time);
             }
         };
 
         return listener;
+    }
+
+    private TimePickerDialog makeTimePickerDialog(Calendar time, TimePickerDialog.OnTimeSetListener listener) {
+        int hour = time.get(Calendar.HOUR_OF_DAY);
+        int min = time.get(Calendar.MINUTE);
+        TimePickerDialog tpd = new TimePickerDialog(this, listener, hour, min, false);
+
+        return tpd;
     }
 
 
