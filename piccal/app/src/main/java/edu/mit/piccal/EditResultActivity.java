@@ -1,7 +1,9 @@
 package edu.mit.piccal;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,12 +23,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.GridLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -125,8 +131,23 @@ public class EditResultActivity extends AppCompatActivity {
             }
         });
 
-        // Set poster icon to be a thumbnail of the captured image:
+        // Set GridLayout listeners for time pickers:
+        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
+        int index_setFromTime = 7;
+        int index_setToTime = 9;
 
+        ((EditText)grid.getChildAt(index_setFromTime)).setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "Click edit FROM time");
+                editFromTime();
+            }
+        });
+        ((EditText)grid.getChildAt(index_setToTime)).setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Log.d(TAG, "Click edit TO time");
+                editToTime();
+            }
+        });
 
         // Set Time Pickers to point to the correct time
         setTimePicker((TimePicker)findViewById(R.id.timePickerFrom), Calendar.getInstance());
@@ -488,6 +509,30 @@ public class EditResultActivity extends AppCompatActivity {
         int day = c.get(Calendar.DATE);
         dp.updateDate(year, month, day);
         Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
+    }
+
+
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // TODO Auto-generated method stub
+//            mhour = hourOfDay;
+//            mminute = minute;
+//            nexttime = (new StringBuilder().append(mhour).append(":").append(mminute).append(":").append(msecond)).toString();
+//            dateandtime = nextdate+nexttime;
+        }
+    };
+
+    public void editFromTime() {
+        Log.d(TAG, "Editing FROM time.");
+        TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetListener, 3, 20, false);
+        tpd.show();
+    }
+
+    public void editToTime() {
+        Log.d(TAG, "Editing TO time.");
+        TimePickerDialog tpd = new TimePickerDialog(this, mTimeSetListener, 3, 20, false);
+        tpd.show();
     }
 
 
