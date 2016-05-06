@@ -459,45 +459,19 @@ public class EditResultActivity extends AppCompatActivity {
 
 
     public void populateTextEdits(String ocrText) {
-        EventExtractor ee = new EventExtractor();
-        Event event = ee.extractInfoFromPoster(ocrText);
+        Event event = new Event(ocrText);
 
         mEventTime[FROM] = event.getSmartStart();
         mEventTime[TO] = event.getSmartEnd();
+
         populateTimeText(FROM, mEventTime[FROM]);
         populateTimeText(TO, mEventTime[TO]);
 
         setDatePicker((DatePicker)findViewById(R.id.datePicker), mEventTime[FROM]);
 
-        String[] split_text = ocrText.split("\\s+");
-
-        // Sets title text
-        String titleText = ocrText;
-        if(split_text.length >= 4) {
-            StringBuilder strBuilder = new StringBuilder();
-            for (int i = 0; i < 4; i++) {
-                strBuilder.append(split_text[i] + " ");
-            }
-            titleText = strBuilder.toString();
-        }
-
-        // Sets location text if applicable
-        String locText = "";
-        if(split_text.length >= 3) {
-            StringBuilder strBuilder = new StringBuilder();
-            for (int i = split_text.length - 3; i < split_text.length; i++) {
-                strBuilder.append(split_text[i] + " ");
-            }
-            locText = strBuilder.toString();
-        }
-
-        // Sets the details/description text
-        String detailsText = ocrText;
-
-        ((EditText)findViewById(R.id.editTextTitle)).setText(titleText);
-        ((EditText)findViewById(R.id.editTextLocation)).setText(locText);
-        ((EditText)findViewById(R.id.editTextDescription)).setText(detailsText);
-
+        ((EditText)findViewById(R.id.editTextTitle)).setText(event.title);
+        ((EditText)findViewById(R.id.editTextLocation)).setText(event.location);
+        ((EditText)findViewById(R.id.editTextDescription)).setText(event.description);
     }
 
     private void setDatePicker(DatePicker dp, Calendar c) {
@@ -505,7 +479,6 @@ public class EditResultActivity extends AppCompatActivity {
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DATE);
         dp.updateDate(year, month, day);
-        Log.d(TAG, "Setting DatePicker (year,month,day) to (" + year + "," + month + "," + day + ")");
     }
 
     private TimePickerDialog.OnTimeSetListener makeTimeSetListener(final int which) {

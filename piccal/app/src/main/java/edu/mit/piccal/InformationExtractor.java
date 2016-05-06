@@ -8,16 +8,46 @@ import java.util.*;
 import com.joestelmach.natty.*;
 
 
-public class EventExtractor {
+public class InformationExtractor {
 
-    private static final String TAG = "EventExtractor";
+    private static final String TAG = "InformationExtractor";
 
-    public EventExtractor() {
+    public static String location(String ocrText) {
+        String[] split_text = ocrText.split("\\s+");
 
+        String locText = "";
+        if(split_text.length >= 3) {
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = split_text.length - 3; i < split_text.length; i++) {
+                strBuilder.append(split_text[i] + " ");
+            }
+            locText = strBuilder.toString();
+        }
+
+        return locText;
     }
 
-    public Event extractInfoFromPoster(String ocrString) {
-        Event event = new Event();
+    public static String title(String ocrText) {
+        String[] split_text = ocrText.split("\\s+");
+
+        String titleText = ocrText;
+        if(split_text.length >= 4) {
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = 0; i < 4; i++) {
+                strBuilder.append(split_text[i] + " ");
+            }
+            titleText = strBuilder.toString();
+        }
+
+        return titleText;
+    }
+
+    public static String description(String ocrText) {
+        return ocrText;
+    }
+
+    public static Calendar[] startEnd(String ocrString) {
+        Calendar[] start_end = {null, null};
         Parser parser = new Parser();
 
         //parse out possible start and end dates as DateGroup objects
@@ -92,11 +122,16 @@ public class EventExtractor {
                     }
                 }
             }
-            event.start.setTime(startDate);
-            event.end.setTime(endDate);
+
+            Calendar start_cal = Calendar.getInstance(); start_cal.setTime(startDate);
+            Calendar end_cal = Calendar.getInstance(); end_cal.setTime(endDate);
+
+            start_end[0] = start_cal;
+            start_end[1] = end_cal;
+
             break;
         }
-        return event;
+        return start_end;
     }
 
 }
