@@ -64,10 +64,8 @@ public class EditResultActivity extends AppCompatActivity {
     private Calendar[] mEventTime = {null, null};
 
     // Set-time listeners for FROM and TO time pickers:
-    private TimePickerDialog.OnTimeSetListener[] mTimeSetListener = {null, null};
-
-    // Time picker dialogs
-    private TimePickerDialog[] mTimePickerDialog = {null, null};
+    private final TimePickerDialog.OnTimeSetListener[] TIME_SET_LISTENER
+            = {makeTimeSetListener(FROM), makeTimeSetListener(TO)};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,12 +119,6 @@ public class EditResultActivity extends AppCompatActivity {
         mEventTime[TO] = Calendar.getInstance();
         mEventTime[TO].add(Calendar.HOUR_OF_DAY, 1);
 
-        // Create time picker dialogs
-        mTimeSetListener[FROM] = makeTimeSetListener(FROM);
-        mTimeSetListener[TO] = makeTimeSetListener(TO);
-        mTimePickerDialog[FROM] = new TimePickerDialog(this, mTimeSetListener[FROM], 3, 20, false);
-        mTimePickerDialog[TO] = new TimePickerDialog(this, mTimeSetListener[TO], 3, 20, false);
-
         // Populate Time fields with the initially-created times
         populateTimeText(FROM, mEventTime[FROM]);
         populateTimeText(TO, mEventTime[TO]);
@@ -139,14 +131,14 @@ public class EditResultActivity extends AppCompatActivity {
         ((EditText)grid.getChildAt(index_setFromTime)).setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
                 Log.d(TAG, "Editing TO time.");
-                TimePickerDialog tpd = makeTimePickerDialog(mEventTime[FROM], mTimeSetListener[FROM]);
+                TimePickerDialog tpd = makeTimePickerDialog(mEventTime[FROM], TIME_SET_LISTENER[FROM]);
                 tpd.show();
             }
         });
         ((EditText)grid.getChildAt(index_setToTime)).setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
                 Log.d(TAG, "Editing TO time.");
-                TimePickerDialog tpd = makeTimePickerDialog(mEventTime[TO], mTimeSetListener[TO]);
+                TimePickerDialog tpd = makeTimePickerDialog(mEventTime[TO], TIME_SET_LISTENER[TO]);
                 tpd.show();
             }
         });
