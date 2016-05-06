@@ -2,11 +2,15 @@ package edu.mit.piccal;
 
 
 
+import android.util.Log;
+
 import java.util.*;
 import com.joestelmach.natty.*;
 
 
 public class EventExtractor {
+
+    private static final String TAG = "EventExtractor";
 
     public EventExtractor() {
 
@@ -74,20 +78,22 @@ public class EventExtractor {
 
                     // if there are more than one dates, set the new end date to the second date
                     if (newDates.size() > 1) {
+                        Log.d(TAG, "Second date found.");
                         endDate.setHours(newDates.get(1).getHours());
                         endDate.setMinutes(newDates.get(1).getMinutes());
                         endDate.setSeconds(newDates.get(1).getSeconds());
                     }
                     // else, set it as the start date + 1 hour
                     else {
+                        Log.d(TAG, "No second date found. Defaulting to start + 1 hour.");
                         endDate.setHours(startDate.getHours()+1);
                         endDate.setMinutes(startDate.getMinutes());
                         endDate.setSeconds(startDate.getSeconds());
                     }
                 }
             }
-            event.start = startDate;
-            event.end = endDate;
+            event.start.setTime(startDate);
+            event.end.setTime(endDate);
             break;
         }
         return event;

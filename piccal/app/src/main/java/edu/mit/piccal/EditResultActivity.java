@@ -1,20 +1,16 @@
 package edu.mit.piccal;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
@@ -23,38 +19,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.GridLayout;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.Core;
-
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -153,8 +128,8 @@ public class EditResultActivity extends AppCompatActivity {
         mTimePickerDialog[TO] = new TimePickerDialog(this, mTimeSetListener[TO], 3, 20, false);
 
         // Populate Time fields with the initially-created times
-        populateTime(FROM, mEventTime[FROM]);
-        populateTime(TO, mEventTime[TO]);
+        populateTimeText(FROM, mEventTime[FROM]);
+        populateTimeText(TO, mEventTime[TO]);
 
         // Set GridLayout listeners for time pickers:
         GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
@@ -176,11 +151,24 @@ public class EditResultActivity extends AppCompatActivity {
             }
         });
 
+        // Initialize DatePicker with initial date as well as its onSet listener:
+        Calendar date = mEventTime[FROM];
+        final int year = date.get(Calendar.YEAR), month = date.get(Calendar.MONTH),
+                day = date.get(Calendar.DATE);
+        DatePicker.OnDateChangedListener dateListener = new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                mEventTime[FROM].set(year, monthOfYear, dayOfMonth);
+                mEventTime[TO].set(year, monthOfYear, dayOfMonth);
+            }
+        };
+        ((DatePicker)findViewById(R.id.datePicker)).init(year, month, day, dateListener);
+
         // Send the image to the server for processing
         sendImageToServerAndWaitForResult(mCurrentPhotoPath);
     }
 
-    private String populateTime(final int which, Calendar time) {
+    private String populateTimeText(final int which, Calendar time) {
         Log.d(TAG, "Setting time " + which + " to: " + time.toString());
         int editTextId;
         if(which == FROM) {
@@ -350,27 +338,8 @@ public class EditResultActivity extends AppCompatActivity {
         String descr = ((EditText) findViewById(R.id.editTextDescription)).getText().toString();
         String loc = ((EditText) findViewById(R.id.editTextLocation)).getText().toString();
 
-        DatePicker dp = (DatePicker)findViewById(R.id.datePicker);
-        TimePicker tpf = (TimePicker)findViewById(R.id.timePickerFrom);
-        TimePicker tpt = (TimePicker)findViewById(R.id.timePickerTo);
-
-        int year = dp.getYear(), month = dp.getMonth(), day = dp.getDayOfMonth();
-        int hourFrom = tpf.getCurrentHour(), minuteFrom = tpf.getCurrentMinute();
-        int hourTo = tpt.getCurrentHour(), minuteTo = tpt.getCurrentMinute();
-
-        Log.d(TAG, "From date picker, extracted (year,month,day) = ("
-                + year + "," + month + "," + day + ")");
-        Log.d(TAG, "From time pickers, extracted (hour,min,hour,min) = ("
-                + hourFrom + "," + minuteFrom + "," + hourTo + "," + minuteTo +")");
-
-        Calendar calFrom = Calendar.getInstance();
-        calFrom.set(year, month, day, hourFrom, minuteFrom);
-
-        Calendar calTo = Calendar.getInstance();
-        calTo.set(year, month, day, hourTo, minuteTo);
-
-        long startTime = calFrom.getTimeInMillis();
-        long endTime = calTo.getTimeInMillis();
+        long startTime = mEventTime[FROM].getTimeInMillis();
+        long endTime = mEventTime[TO].getTimeInMillis();
 
         Intent dispatchedEvent = addEvent(title, startTime, endTime, descr, loc);
     }
@@ -492,15 +461,13 @@ public class EditResultActivity extends AppCompatActivity {
     public void populateTextEdits(String ocrText) {
         EventExtractor ee = new EventExtractor();
         Event event = ee.extractInfoFromPoster(ocrText);
-        Log.d(TAG, "Extracted (start,end) = (" + event.start.toString() + "," + event.end.toString() + ")" +
-                " from EventExtractor");
-        Calendar calFrom = Calendar.getInstance();
-        calFrom.setTime(event.start);
-        Calendar calTo = Calendar.getInstance();
-        calTo.setTime(event.end);
-        setTimePicker((TimePicker) findViewById(R.id.timePickerFrom), calFrom);
-        setTimePicker((TimePicker) findViewById(R.id.timePickerTo), calTo);
-        setDatePicker((DatePicker) findViewById(R.id.datePicker), calFrom);
+
+        mEventTime[FROM] = event.getSmartStart();
+        mEventTime[TO] = event.getSmartEnd();
+        populateTimeText(FROM, mEventTime[FROM]);
+        populateTimeText(TO, mEventTime[TO]);
+
+        setDatePicker((DatePicker)findViewById(R.id.datePicker), mEventTime[FROM]);
 
         String[] split_text = ocrText.split("\\s+");
 
@@ -533,14 +500,6 @@ public class EditResultActivity extends AppCompatActivity {
 
     }
 
-    private void setTimePicker(TimePicker tp, Calendar c) {
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int mins = c.get(Calendar.MINUTE);
-        tp.setCurrentHour(hour);
-        tp.setCurrentMinute(mins);
-        Log.d(TAG, "Setting TimePicker (hour,minute) to (" + hour + "," + mins + ")");
-    }
-
     private void setDatePicker(DatePicker dp, Calendar c) {
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -556,7 +515,7 @@ public class EditResultActivity extends AppCompatActivity {
                 Calendar time = mEventTime[which];
                 time.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 time.set(Calendar.MINUTE, minute);
-                populateTime(which, time);
+                populateTimeText(which, time);
             }
         };
 
