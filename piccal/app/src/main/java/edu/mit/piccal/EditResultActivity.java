@@ -26,16 +26,14 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TimePicker;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class EditResultActivity extends AppCompatActivity {
-    public static final String PACKAGE_NAME = "edu.mit.piccal";
     private static final String TAG = "piccal_log";
 
     private static final int REQUEST_TAKE_PHOTO = 1;
@@ -43,13 +41,6 @@ public class EditResultActivity extends AppCompatActivity {
 
     // Photo path from MainActivity
     String mCurrentPhotoPath;
-
-    // Tesseract Base Api
-    public static final String DATA_PATH = Environment
-            .getExternalStorageDirectory().toString() + "/piccal/";
-    public static final String LANG = "eng";
-    private TessBaseAPI baseApi = new TessBaseAPI();
-    private OCRService ocrService;
 
     private ImageView mPopupImageView;
     private boolean mPicLoaded;
@@ -81,7 +72,7 @@ public class EditResultActivity extends AppCompatActivity {
         mPicLoaded = false;
 
         // Set onTouch listener for view-popup-image button
-        ((ImageView)findViewById(R.id.iv_poster_thumbnail)).setOnTouchListener(new View.OnTouchListener() {
+        findViewById(R.id.iv_poster_thumbnail).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
@@ -92,16 +83,16 @@ public class EditResultActivity extends AppCompatActivity {
                             mPopupImageView.requestLayout();
                             mPopupImageView.invalidate();
                             mPopupImageView.setVisibility(View.VISIBLE);
-                            ((Button)findViewById(R.id.btn_add2Calendar)).setVisibility(View.INVISIBLE);
-                            ((Button)findViewById(R.id.btn_retry)).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.btn_add2Calendar).setVisibility(View.INVISIBLE);
+                            findViewById(R.id.btn_retry).setVisibility(View.INVISIBLE);
                             popupShowing = true;
                         }
                         break;
                     case MotionEvent.ACTION_UP:
                         if (popupShowing) {
                             mPopupImageView.setVisibility(View.INVISIBLE);
-                            ((Button)findViewById(R.id.btn_add2Calendar)).setVisibility(View.VISIBLE);
-                            ((Button)findViewById(R.id.btn_retry)).setVisibility(View.VISIBLE);
+                            findViewById(R.id.btn_add2Calendar).setVisibility(View.VISIBLE);
+                            findViewById(R.id.btn_retry).setVisibility(View.VISIBLE);
                             popupShowing = false;
                         }
                         break;
@@ -128,14 +119,14 @@ public class EditResultActivity extends AppCompatActivity {
         int index_setFromTime = 7;
         int index_setToTime = 9;
 
-        ((EditText)grid.getChildAt(index_setFromTime)).setOnClickListener(new View.OnClickListener(){
+        grid.getChildAt(index_setFromTime).setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
                 Log.d(TAG, "Editing TO time.");
                 TimePickerDialog tpd = makeTimePickerDialog(mEventTime[FROM], TIME_SET_LISTENER[FROM]);
                 tpd.show();
             }
         });
-        ((EditText)grid.getChildAt(index_setToTime)).setOnClickListener(new View.OnClickListener(){
+        grid.getChildAt(index_setToTime).setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
                 Log.d(TAG, "Editing TO time.");
                 TimePickerDialog tpd = makeTimePickerDialog(mEventTime[TO], TIME_SET_LISTENER[TO]);
@@ -171,7 +162,7 @@ public class EditResultActivity extends AppCompatActivity {
             throw new IllegalArgumentException("Illegal value for 'which'. Should be one of FROM or TO.");
         }
 
-        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+        SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a", Locale.US);
         String text = formatter.format(time.getTime());
         ((EditText)findViewById(editTextId)).setText(text);
         return text;
@@ -206,7 +197,7 @@ public class EditResultActivity extends AppCompatActivity {
             if(bitmap2 != rotatedBitmap2) bitmap2.recycle();
             int rbw = rotatedBitmap2.getWidth(), rbh = rotatedBitmap2.getHeight();
             int ptw = posterThumbnail.getWidth(), pth = posterThumbnail.getHeight();
-            double ratio = .1;
+            double ratio;
             if(pth < ptw) {
                 ratio = 1.0 * rbh / pth;
             } else {
