@@ -207,7 +207,7 @@ public class PickCornersActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent event) {
                 final int X = (int) event.getRawX();
                 final int Y = (int) event.getRawY();
-                ImageView j = (ImageView) findViewById(R.id.imview);
+                ImageView j = (ImageView) findViewById(R.id.corner_topleft);
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
@@ -240,6 +240,7 @@ public class PickCornersActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
+        // Assign the bitmap in the imageView
         if(!mPicLoaded && mCurrentPhotoPath != null) {
             Bitmap bitmap = getBitmap(mCurrentPhotoPath);
             Bitmap rotatedBitmap = getRotatedBitmap(bitmap, mCurrentPhotoPath);
@@ -250,6 +251,35 @@ public class PickCornersActivity extends AppCompatActivity {
 
             mPicLoaded = true;
         }
+
+        // Move four corner images to the corners of the underlying imageView
+        RelativeLayout.LayoutParams params =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        ImageView tl = (ImageView)findViewById(R.id.corner_topleft);
+        ImageView tr = (ImageView)findViewById(R.id.corner_topright);
+        ImageView br = (ImageView)findViewById(R.id.corner_bottomright);
+        ImageView bl = (ImageView)findViewById(R.id.corner_bottomleft);
+
+        int corner_width = tl.getWidth(), corner_height = tl.getHeight();
+
+        int     left_margin = -corner_width / 2,
+                top_margin = -corner_height / 2,
+                right_margin = -corner_width / 2,
+                bottom_margin = -corner_height / 2;
+
+        params.setMargins(left_margin, top_margin, 0, 0);
+        tl.setLayoutParams(params);
+
+
+        RelativeLayout.LayoutParams params2 =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params2.setMargins(0, 0, right_margin, bottom_margin);
+
+        br.setLayoutParams(params2);
+
     }
 
 
