@@ -24,6 +24,8 @@ public class PickCornersActivity extends AppCompatActivity {
     private ImageView imview;
     private static final String TAG = "PickCorners";
 
+    private int _xDelta, _yDelta;
+
     RelativeLayout.LayoutParams layoutParams;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,8 @@ public class PickCornersActivity extends AppCompatActivity {
         imview.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                Log.d(TAG, "onlongclick");
+
                 ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
                 String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
 
@@ -105,6 +109,8 @@ public class PickCornersActivity extends AppCompatActivity {
         imview.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
+                Log.d(TAG, "ondrag");
+
                 switch(event.getAction())
                 {
                     case DragEvent.ACTION_DRAG_STARTED:
@@ -152,23 +158,82 @@ public class PickCornersActivity extends AppCompatActivity {
             }
         });
 
-        imview.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    ClipData data = ClipData.newPlainText("", "");
-                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(imview);
+        // This one works:
+//        View.OnTouchListener onThumbTouch = new View.OnTouchListener()
+//        {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.d(TAG, "on touch 2");
+//
+//                switch(event.getAction()) {
+//                    case MotionEvent.ACTION_MOVE:
+//                    {
+//                        int x_cord = (int) event.getX();
+//                        int y_cord = (int) event.getY();
+//                        Log.d(TAG, "action move at " + x_cord + ", " + y_cord);
+//
+//                    }
+//                    case MotionEvent.ACTION_UP:
+//                    {
+//                        Log.d(TAG, "action up");
+//
+//                    }
+//                }
+//                return true;
+//            }
+//        };
 
-                    imview.startDrag(data, shadowBuilder, imview, 0);
-                    imview.setVisibility(View.INVISIBLE);
-                    return true;
+//        imview.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                Log.d(TAG, "ontouch");
+//
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+////                    ClipData data = ClipData.newPlainText("", "");
+////                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(imview);
+////
+////                    imview.startDrag(data, shadowBuilder, imview, 0);
+////                    imview.setVisibility(View.INVISIBLE);
+//                    return true;
+//                }
+//                else
+//                {
+//                    return false;
+//                }
+//            }
+//        });
+
+        View.OnTouchListener onThumbTouch = new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent event) {
+                final int X = (int) event.getRawX();
+                final int Y = (int) event.getRawY();
+                ImageView j = (ImageView) findViewById(R.id.imview);
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                        _xDelta = (int) (X - j.getTranslationX());
+                        _yDelta = (int) (Y - j.getTranslationY());
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+
+                        j.setTranslationX(X - _xDelta);
+                        j.setTranslationY(Y - _yDelta);
+                        break;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return true;
+
             }
-        });
+        };
+
+        imview.setOnTouchListener(onThumbTouch);
 
     }
 
