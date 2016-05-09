@@ -22,36 +22,47 @@
          />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
         android:id="@+id/corner_topleft"
         android:src="@drawable/crosshair_small"
         android:layout_alignLeft="@+id/imview"
         android:layout_alignTop="@+id/imview"
+        android:layout_marginLeft="@dimen/corner_horiz_margin"
+        android:layout_marginTop="@dimen/corner_vert_margin"
         />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
         android:id="@+id/corner_topright"
         android:src="@drawable/crosshair_small"
         android:layout_alignTop="@+id/imview"
-        android:layout_alignRight="@+id/imview" />
+        android:layout_alignRight="@+id/imview"
+        android:layout_marginRight="@dimen/corner_horiz_margin"
+        android:layout_marginTop="@dimen/corner_vert_margin"
+        />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
         android:id="@+id/corner_bottomright"
         android:src="@drawable/crosshair_small"
         android:layout_alignBottom="@+id/imview"
-        android:layout_alignRight="@+id/imview" />
+        android:layout_alignRight="@+id/imview"
+        android:layout_marginRight="@dimen/corner_horiz_margin"
+        android:layout_marginBottom="@dimen/corner_vert_margin"
+        />
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
         android:id="@+id/corner_bottomleft"
         android:src="@drawable/crosshair_small"
         android:layout_alignBottom="@+id/imview"
-        android:layout_alignLeft="@+id/imview" />
+        android:layout_alignLeft="@+id/imview"
+        android:layout_marginLeft="@dimen/corner_horiz_margin"
+        android:layout_marginBottom="@dimen/corner_vert_margin"
+        />
 
 </RelativeLayout>

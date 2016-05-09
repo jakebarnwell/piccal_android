@@ -21,7 +21,13 @@ public class PickCornersActivity extends AppCompatActivity {
 
     private String mCurrentPhotoPath;
     private boolean mPicLoaded = false;
+
+    // The currently shown image
     private ImageView imview;
+
+    // The four corner imageview sprites
+    private ImageView tl, tr, br, bl;
+
     private static final String TAG = "PickCorners";
 
     private int _xDelta, _yDelta;
@@ -38,170 +44,10 @@ public class PickCornersActivity extends AppCompatActivity {
         }
 
         imview = (ImageView)findViewById(R.id.imview);
-
-//        imview.setOnDragListener(new View.OnDragListener() {
-//            @Override
-//            public boolean onDrag(View v, DragEvent event) {
-//                Log.d(TAG, "onDrag event");
-//                switch(event.getAction())
-//                {
-//                    case DragEvent.ACTION_DRAG_STARTED:
-//                        layoutParams = (RelativeLayout.LayoutParams)v.getLayoutParams();
-//                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_STARTED");
-//
-//                        // Do nothing
-//                        break;
-//
-//                    case DragEvent.ACTION_DRAG_ENTERED:
-//                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_ENTERED");
-//                        int x_cord = (int) event.getX();
-//                        int y_cord = (int) event.getY();
-//                        break;
-//
-//                    case DragEvent.ACTION_DRAG_EXITED :
-//                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_EXITED");
-//                        x_cord = (int) event.getX();
-//                        y_cord = (int) event.getY();
-//                        layoutParams.leftMargin = x_cord;
-//                        layoutParams.topMargin = y_cord;
-//                        v.setLayoutParams(layoutParams);
-//                        break;
-//
-//                    case DragEvent.ACTION_DRAG_LOCATION  :
-//                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_LOCATION");
-//                        x_cord = (int) event.getX();
-//                        y_cord = (int) event.getY();
-//                        break;
-//
-//                    case DragEvent.ACTION_DRAG_ENDED   :
-//                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_ENDED");
-//
-//                        // Do nothing
-//                        break;
-//
-//                    case DragEvent.ACTION_DROP:
-//                        Log.d(TAG, "ACTION_DROP event");
-//
-//                        // Do nothing
-//                        break;
-//                    default: break;
-//                }
-//                return true;
-//            }
-//        });
-
-        imview.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Log.d(TAG, "onlongclick");
-
-                ClipData.Item item = new ClipData.Item((CharSequence)v.getTag());
-                String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-
-                ClipData dragData = new ClipData(v.getTag().toString(),mimeTypes, item);
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder(imview);
-
-                v.startDrag(dragData,myShadow,null,0);
-                return true;
-            }
-        });
-
-        imview.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                Log.d(TAG, "ondrag");
-
-                switch(event.getAction())
-                {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        layoutParams = (RelativeLayout.LayoutParams)v.getLayoutParams();
-                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_STARTED");
-
-                        // Do nothing
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_ENTERED");
-                        int x_cord = (int) event.getX();
-                        int y_cord = (int) event.getY();
-                        break;
-
-                    case DragEvent.ACTION_DRAG_EXITED :
-                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_EXITED");
-                        x_cord = (int) event.getX();
-                        y_cord = (int) event.getY();
-                        layoutParams.leftMargin = x_cord;
-                        layoutParams.topMargin = y_cord;
-                        v.setLayoutParams(layoutParams);
-                        break;
-
-                    case DragEvent.ACTION_DRAG_LOCATION  :
-                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_LOCATION");
-                        x_cord = (int) event.getX();
-                        y_cord = (int) event.getY();
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENDED   :
-                        Log.d(TAG, "Action is DragEvent.ACTION_DRAG_ENDED");
-
-                        // Do nothing
-                        break;
-
-                    case DragEvent.ACTION_DROP:
-                        Log.d(TAG, "ACTION_DROP event");
-
-                        // Do nothing
-                        break;
-                    default: break;
-                }
-                return true;
-            }
-        });
-
-        // This one works:
-//        View.OnTouchListener onThumbTouch = new View.OnTouchListener()
-//        {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d(TAG, "on touch 2");
-//
-//                switch(event.getAction()) {
-//                    case MotionEvent.ACTION_MOVE:
-//                    {
-//                        int x_cord = (int) event.getX();
-//                        int y_cord = (int) event.getY();
-//                        Log.d(TAG, "action move at " + x_cord + ", " + y_cord);
-//
-//                    }
-//                    case MotionEvent.ACTION_UP:
-//                    {
-//                        Log.d(TAG, "action up");
-//
-//                    }
-//                }
-//                return true;
-//            }
-//        };
-
-//        imview.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                Log.d(TAG, "ontouch");
-//
-//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-////                    ClipData data = ClipData.newPlainText("", "");
-////                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(imview);
-////
-////                    imview.startDrag(data, shadowBuilder, imview, 0);
-////                    imview.setVisibility(View.INVISIBLE);
-//                    return true;
-//                }
-//                else
-//                {
-//                    return false;
-//                }
-//            }
-//        });
+//        tl = (ImageView)findViewById(R.id.corner_topleft);
+//        tr = (ImageView)findViewById(R.id.corner_topright);
+//        br = (ImageView)findViewById(R.id.corner_bottomright);
+//        bl = (ImageView)findViewById(R.id.corner_bottomleft);
 
         View.OnTouchListener onThumbTouch = new View.OnTouchListener() {
             public boolean onTouch(View view, MotionEvent event) {
@@ -237,6 +83,37 @@ public class PickCornersActivity extends AppCompatActivity {
 
     }
 
+    private View.OnTouchListener makeCornerOnTouchListener(final ImageView iv_corner) {
+        return new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent event) {
+                final int X = (int) event.getRawX();
+                final int Y = (int) event.getRawY();
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                        _xDelta = (int) (X - iv_corner.getTranslationX());
+                        _yDelta = (int) (Y - iv_corner.getTranslationY());
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        break;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+
+                        iv_corner.setTranslationX(X - _xDelta);
+                        iv_corner.setTranslationY(Y - _yDelta);
+                        break;
+                }
+
+                return true;
+
+            }
+        };
+    }
+
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
@@ -251,34 +128,29 @@ public class PickCornersActivity extends AppCompatActivity {
 
             mPicLoaded = true;
         }
-
-        // Move four corner images to the corners of the underlying imageView
-        RelativeLayout.LayoutParams params =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-        ImageView tl = (ImageView)findViewById(R.id.corner_topleft);
-        ImageView tr = (ImageView)findViewById(R.id.corner_topright);
-        ImageView br = (ImageView)findViewById(R.id.corner_bottomright);
-        ImageView bl = (ImageView)findViewById(R.id.corner_bottomleft);
-
-        int corner_width = tl.getWidth(), corner_height = tl.getHeight();
-
-        int     left_margin = -corner_width / 2,
-                top_margin = -corner_height / 2,
-                right_margin = -corner_width / 2,
-                bottom_margin = -corner_height / 2;
-
-        params.setMargins(left_margin, top_margin, 0, 0);
-        tl.setLayoutParams(params);
-
-
-        RelativeLayout.LayoutParams params2 =
-                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params2.setMargins(0, 0, right_margin, bottom_margin);
-
-        br.setLayoutParams(params2);
+//
+//        // Move four corner images to the corners of the underlying imageView
+//        RelativeLayout.LayoutParams params =
+//                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+//
+//        int corner_width = tl.getWidth(), corner_height = tl.getHeight();
+//
+//        int     left_margin = -corner_width / 2,
+//                top_margin = -corner_height / 2,
+//                right_margin = -corner_width / 2,
+//                bottom_margin = -corner_height / 2;
+//
+//        params.setMargins(left_margin, top_margin, 0, 0);
+//        tl.setLayoutParams(params);
+//
+//
+//        RelativeLayout.LayoutParams params2 =
+//                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+//                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+//        params2.setMargins(0, 0, right_margin, bottom_margin);
+//
+//        br.setLayoutParams(params2);
 
     }
 

@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Log.i(TAG, "onActivityResult: " + this);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             Intent intent = new Intent(this, EditResultActivity.class);
-//            intent = new Intent(this, PickCornersActivity.class);
+            intent = new Intent(this, PickCornersActivity.class);
             intent.putExtra("PHOTO_PATH", mCurrentPhotoPath);
             startActivity(intent);
         }

@@ -7,5 +7,10 @@
     <dimen name="fab_margin">12dp</dimen>
 
     <dimen name="viewImage_text_height">24dp</dimen>
+    <dimen name="corner_size">100dp</dimen>
+
+    <!-- depends on corner_size and activity_horizontal/vertical_margin -->
+    <dimen name="corner_horiz_margin">-38dp</dimen>
+    <dimen name="corner_vert_margin">-38dp</dimen>
 
 </resources>
