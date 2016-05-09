@@ -2,6 +2,8 @@ package edu.mit.piccal;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -9,6 +11,7 @@ import android.media.ExifInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -52,6 +55,53 @@ public class PickCornersActivity extends AppCompatActivity {
         tr.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_topright)));
         br.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_bottomright)));
         bl.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_bottomleft)));
+    }
+
+    public void onClick_confirm(View v) {
+        String corners_string = "";
+        int im_left = imview.getLeft(), im_top = imview.getTop(), im_right = imview.getRight(),
+                im_bottom = imview.getBottom();
+//        Log.d(TAG, "im left top right bottom: " + im_left + " " + im_top + " " + im_right + " " + im_bottom);
+        int im_width = im_right - im_left, im_height = im_bottom - im_top;
+//        Log.d(TAG, "im width height: " + im_width + " " + im_height);
+
+        float px_50 = pixels(50);
+        float tl_cx = tl.getLeft() + tl.getTranslationX() + px_50,
+                tl_cy = tl.getTop() + tl.getTranslationY() + px_50;
+        float tr_cx = tr.getLeft() + tr.getTranslationX() + px_50,
+                tr_cy = tr.getTop() + + tr.getTranslationY() + px_50;
+        float br_cx = br.getLeft() + br.getTranslationX() + px_50,
+                br_cy = br.getTop() + br.getTranslationY() + px_50;
+        float bl_cx = bl.getLeft() + bl.getTranslationX() + px_50,
+                bl_cy = bl.getTop() + bl.getTranslationY() + px_50;
+//        Log.d(TAG, "TL TR BR BL centers x, y: " + tl_cx + " " + tl_cy + " " + tr_cx + " " + tr_cy + " " +
+//        br_cx + " " + br_cy + " " + bl_cx + " " + bl_cy);
+
+        corners_string += clamp((1.0*tl_cx - im_left) / im_width) + " " + clamp((1.0*tl_cy - im_top) / im_height) + " ";
+        corners_string += clamp((1.0*tr_cx - im_left) / im_width) + " " + clamp((1.0*tr_cy - im_top) / im_height) + " ";
+        corners_string += clamp((1.0*br_cx - im_left) / im_width) + " " + clamp((1.0*br_cy - im_top) / im_height) + " ";
+        corners_string += clamp((1.0*bl_cx - im_left) / im_width) + " " + clamp((1.0*bl_cy - im_top) / im_height);
+        Log.d(TAG, "Corners string: " + corners_string);
+        Intent intent = new Intent(this, EditResultActivity.class);
+        intent.putExtra("PHOTO_PATH", mCurrentPhotoPath);
+        intent.putExtra("CORNERS", corners_string);
+        startActivity(intent);
+    }
+
+    private float pixels(int dp) {
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
+        return px;
+    }
+
+    private double clamp(double x) {
+        if(x < 0) {
+            return 0;
+        } else if(x > 1) {
+            return 1;
+        } else {
+            return x;
+        }
     }
 
     private View.OnTouchListener makeCornerOnTouchListener(final ImageView iv_corner) {
