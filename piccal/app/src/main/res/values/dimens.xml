@@ -9,7 +9,7 @@
     <dimen name="viewImage_text_height">24dp</dimen>
     <dimen name="corner_size">100dp</dimen>
 
-    <!-- depends on corner_size and activity_horizontal/vertical_margin -->
+    <!-- depends on corner_size -->
     <dimen name="corner_horiz_margin">-50dp</dimen>
     <dimen name="corner_vert_margin">-50dp</dimen>
 

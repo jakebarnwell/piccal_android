@@ -178,7 +178,7 @@ public class EditResultActivity extends AppCompatActivity {
         progDialog.setIndeterminate(false);
         progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progDialog.setCancelable(true);
-        ServerCommunicator server = new ServerCommunicator(this, progDialog);
+        ServerCommunicator server = new ServerCommunicator(this, progDialog, mCornersString);
         server.send(path);
     }
 

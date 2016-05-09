@@ -27,6 +27,8 @@ public class ServerCommunicator {
     private static final String SERVER_URL = "http://54.174.172.48/upload/";
     private static final String TAG = "ServerCommunicator: ";
 
+    private String mCornerData = "0.0 0.0 0.0 1.0 1.0 0.0 1.0 1.0";
+
     private ProgressDialog mProgDialog;
     private EditResultActivity that;
 
@@ -36,10 +38,11 @@ public class ServerCommunicator {
      * @param callingActivity the instance of the activity calling this constructor
      * @param pd ProgressDialog instance to use
      */
-    public ServerCommunicator(EditResultActivity callingActivity, ProgressDialog pd) {
+    public ServerCommunicator(EditResultActivity callingActivity, ProgressDialog pd, String cornerData) {
         Log.d(TAG, "Creating a ServerCommunicator for Activity " + callingActivity.toString());
         that = callingActivity;
         mProgDialog = pd;
+        mCornerData = cornerData;
     }
 
     public void send(String path) {
@@ -157,8 +160,7 @@ public class ServerCommunicator {
 
                 addDataToPostRequest(outputStream, "orientation", Integer.toString(orientation));
 
-                String cornerData = "0.0 0.0 0.0 1.0 1.0 0.0 1.0 1.0";
-                addDataToPostRequest(outputStream, "corners", cornerData);
+                addDataToPostRequest(outputStream, "corners", mCornerData);
 
                 outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
                 Log.d(TAG, "Done writing image to server.");
