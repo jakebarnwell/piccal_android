@@ -44,43 +44,16 @@ public class PickCornersActivity extends AppCompatActivity {
         }
 
         imview = (ImageView)findViewById(R.id.imview);
-//        tl = (ImageView)findViewById(R.id.corner_topleft);
-//        tr = (ImageView)findViewById(R.id.corner_topright);
-//        br = (ImageView)findViewById(R.id.corner_bottomright);
-//        bl = (ImageView)findViewById(R.id.corner_bottomleft);
 
-        View.OnTouchListener onThumbTouch = new View.OnTouchListener() {
-            public boolean onTouch(View view, MotionEvent event) {
-                final int X = (int) event.getRawX();
-                final int Y = (int) event.getRawY();
-                ImageView j = (ImageView) findViewById(R.id.corner_topleft);
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                        _xDelta = (int) (X - j.getTranslationX());
-                        _yDelta = (int) (Y - j.getTranslationY());
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        break;
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        break;
-                    case MotionEvent.ACTION_POINTER_UP:
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
+        tl = (ImageView)findViewById(R.id.corner_topleft);
+        tr = (ImageView)findViewById(R.id.corner_topright);
+        br = (ImageView)findViewById(R.id.corner_bottomright);
+        bl = (ImageView)findViewById(R.id.corner_bottomleft);
 
-                        j.setTranslationX(X - _xDelta);
-                        j.setTranslationY(Y - _yDelta);
-                        break;
-                }
-
-                return true;
-
-            }
-        };
-
-        imview.setOnTouchListener(onThumbTouch);
-
+        tl.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_topleft)));
+        tr.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_topright)));
+        br.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_bottomright)));
+        bl.setOnTouchListener(makeCornerOnTouchListener((ImageView)findViewById(R.id.corner_bottomleft)));
     }
 
     private View.OnTouchListener makeCornerOnTouchListener(final ImageView iv_corner) {

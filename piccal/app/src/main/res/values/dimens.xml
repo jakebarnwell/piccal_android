@@ -10,7 +10,7 @@
     <dimen name="corner_size">100dp</dimen>
 
     <!-- depends on corner_size and activity_horizontal/vertical_margin -->
-    <dimen name="corner_horiz_margin">-38dp</dimen>
-    <dimen name="corner_vert_margin">-38dp</dimen>
+    <dimen name="corner_horiz_margin">-50dp</dimen>
+    <dimen name="corner_vert_margin">-50dp</dimen>
 
 </resources>
