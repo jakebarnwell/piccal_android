@@ -42,6 +42,9 @@ public class EditResultActivity extends AppCompatActivity {
     // Photo path from MainActivity
     String mCurrentPhotoPath;
 
+    // Corners string to send to server
+    private String mCornersString;
+
     private ImageView mPopupImageView;
     private boolean mPicLoaded;
 
@@ -60,13 +63,14 @@ public class EditResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_result);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             mCurrentPhotoPath = extras.getString("PHOTO_PATH");
+            mCornersString = extras.getString("CORNERS");
         }
-
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_result);
 
         mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
         mPicLoaded = false;
@@ -178,6 +182,9 @@ public class EditResultActivity extends AppCompatActivity {
         server.send(path);
     }
 
+    // We put all of the pic-loading logic here because if we do it in the onCreate
+    //  method we get weird imageView errors since the ImageView hasn't been properly
+    //  created yet.
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);

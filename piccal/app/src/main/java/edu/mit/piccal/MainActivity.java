@@ -32,17 +32,6 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-
-//import com.google.api.client.auth.oauth2.Credential;
-//import com.google.api.client.http.HttpTransport;
-//import com.google.api.client.json.JsonFactory;
-//import com.google.api.client.json.jackson2.JacksonFactory;
-//import com.google.appengine.repackaged.com.google.api.client.extensions.appengine.http.UrlFetchTransport;
-//import com.google.api.services.calendar.Calendar;
-//import com.google.api.services.calendar.model.Event;
-//import com.google.appengine.api.users.UserServiceFactory;
-
 public class MainActivity extends AppCompatActivity implements OnClickListener {
     public static final String PACKAGE_NAME = "edu.mit.piccal";
     private static final String TAG = "piccal_log";
@@ -75,51 +64,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         }
     }
 
-    public void click_addTestToCal(View view) {
-        PiccalCalendar cal = new PiccalCalendar(this);
-        String title = "Test Event", time_date = "Apr 22 10:30am", loc = "Killian Court";
-        String descr = "This is a test event for the Piccal android app.";
-        long startTime = System.currentTimeMillis();
-        long endTime = System.currentTimeMillis() + (1000 * 3600); // adds 1 hour
-//        Intent dispatchedIntent = addEvent(title, startTime, endTime, descr, loc);
-        Date[] start_end = cal.extractDateInfo("unparsed 3/12/14 january");
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult: " + this);
         if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
             Intent intent = new Intent(this, EditResultActivity.class);
+            intent = new Intent(this, PickCornersActivity.class);
             intent.putExtra("PHOTO_PATH", mCurrentPhotoPath);
             startActivity(intent);
-            //setPic();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Log.i(TAG, "onResume: " + this);
-    }
-
-    @Override
-    protected void onPause() {
-        // TODO Auto-generated method stub
-        super.onPause();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        // TODO Auto-generated method stub
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        // TODO Auto-generated method stub
-        super.onSaveInstanceState(outState);
-        Log.i(TAG, "onSaveInstanceState");
     }
 
     private void dispatchTakePictureIntent() {

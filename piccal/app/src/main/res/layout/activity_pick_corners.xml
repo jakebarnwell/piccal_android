@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:paddingBottom="@dimen/corner_picker_vertical_margin"
+    android:paddingLeft="@dimen/corner_picker_horizontal_margin"
+    android:paddingRight="@dimen/corner_picker_horizontal_margin"
+    android:paddingTop="@dimen/corner_picker_vertical_margin"
+
+    tools:context="edu.mit.piccal.PickCornersActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Drag the four targets to point at the four corners of the poster."
+        android:id="@+id/tv_instructions"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold" />
+
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_below="@+id/tv_instructions"
+        android:layout_above="@+id/btn_continue"
+        android:id="@+id/imview"
+         />
+
+    <ImageView
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
+        android:id="@+id/corner_topleft"
+        android:src="@drawable/crosshair_small"
+        android:layout_alignLeft="@+id/imview"
+        android:layout_alignTop="@+id/imview"
+        android:layout_marginLeft="@dimen/corner_horiz_margin"
+        android:layout_marginTop="@dimen/corner_vert_margin"
+        />
+
+    <ImageView
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
+        android:id="@+id/corner_topright"
+        android:src="@drawable/crosshair_small"
+        android:layout_alignTop="@+id/imview"
+        android:layout_alignRight="@+id/imview"
+        android:layout_marginRight="@dimen/corner_horiz_margin"
+        android:layout_marginTop="@dimen/corner_vert_margin"
+        />
+
+    <ImageView
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
+        android:id="@+id/corner_bottomright"
+        android:src="@drawable/crosshair_small"
+        android:layout_alignBottom="@+id/imview"
+        android:layout_alignRight="@+id/imview"
+        android:layout_marginRight="@dimen/corner_horiz_margin"
+        android:layout_marginBottom="@dimen/corner_vert_margin"
+        />
+
+    <ImageView
+        android:layout_width="@dimen/corner_size"
+        android:layout_height="@dimen/corner_size"
+        android:id="@+id/corner_bottomleft"
+        android:src="@drawable/crosshair_small"
+        android:layout_alignBottom="@+id/imview"
+        android:layout_alignLeft="@+id/imview"
+        android:layout_marginLeft="@dimen/corner_horiz_margin"
+        android:layout_marginBottom="@dimen/corner_vert_margin"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Continue"
+        android:id="@+id/btn_continue"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="onClick_confirm"
+        />
+
+
+</RelativeLayout>

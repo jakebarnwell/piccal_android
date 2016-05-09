@@ -2,8 +2,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">12dp</dimen>
     <dimen name="activity_vertical_margin">12dp</dimen>
+    <dimen name="corner_picker_vertical_margin">0dp</dimen>
+    <dimen name="corner_picker_horizontal_margin">0dp</dimen>
     <dimen name="fab_margin">12dp</dimen>
 
     <dimen name="viewImage_text_height">24dp</dimen>
+    <dimen name="corner_size">100dp</dimen>
+
+    <!-- depends on corner_size and activity_horizontal/vertical_margin -->
+    <dimen name="corner_horiz_margin">-50dp</dimen>
+    <dimen name="corner_vert_margin">-50dp</dimen>
 
 </resources>
