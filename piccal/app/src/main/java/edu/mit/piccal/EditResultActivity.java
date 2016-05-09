@@ -42,6 +42,9 @@ public class EditResultActivity extends AppCompatActivity {
     // Photo path from MainActivity
     String mCurrentPhotoPath;
 
+    // Corners string to send to server
+    private String mCornersString;
+
     private ImageView mPopupImageView;
     private boolean mPicLoaded;
 
@@ -66,6 +69,7 @@ public class EditResultActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             mCurrentPhotoPath = extras.getString("PHOTO_PATH");
+            mCornersString = extras.getString("CORNERS");
         }
 
         mPopupImageView = (ImageView) findViewById(R.id.iv_popup);
