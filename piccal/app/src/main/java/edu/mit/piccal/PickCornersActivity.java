@@ -32,8 +32,6 @@ public class PickCornersActivity extends AppCompatActivity {
 
     private int _xDelta, _yDelta;
 
-    RelativeLayout.LayoutParams layoutParams;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pick_corners);
@@ -101,33 +99,8 @@ public class PickCornersActivity extends AppCompatActivity {
 
             mPicLoaded = true;
         }
-//
-//        // Move four corner images to the corners of the underlying imageView
-//        RelativeLayout.LayoutParams params =
-//                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-//
-//        int corner_width = tl.getWidth(), corner_height = tl.getHeight();
-//
-//        int     left_margin = -corner_width / 2,
-//                top_margin = -corner_height / 2,
-//                right_margin = -corner_width / 2,
-//                bottom_margin = -corner_height / 2;
-//
-//        params.setMargins(left_margin, top_margin, 0, 0);
-//        tl.setLayoutParams(params);
-//
-//
-//        RelativeLayout.LayoutParams params2 =
-//                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-//        params2.setMargins(0, 0, right_margin, bottom_margin);
-//
-//        br.setLayoutParams(params2);
 
     }
-
-
 
     private static Bitmap getBitmap(String path) {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
