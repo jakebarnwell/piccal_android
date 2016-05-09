@@ -155,13 +155,10 @@ public class ServerCommunicator {
 
                 outputStream.writeBytes(lineEnd);
 
-                // Send orientation
-                outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                outputStream.writeBytes("Content-Disposition: form-data; name=\"orientation\""  + lineEnd);
-                outputStream.writeBytes(lineEnd);
+                addDataToPostRequest(outputStream, "orientation", Integer.toString(orientation));
 
-                outputStream.writeBytes(Integer.toString(orientation));
-                outputStream.writeBytes(lineEnd);
+                String cornerData = "0.0 0.0 0.0 1.0 1.0 0.0 1.0 1.0";
+                addDataToPostRequest(outputStream, "corners", cornerData);
 
                 outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
                 Log.d(TAG, "Done writing image to server.");
@@ -205,6 +202,19 @@ public class ServerCommunicator {
             }
 
             return "";
+        }
+
+        private void addDataToPostRequest(DataOutputStream outputStream, String dataName, String data) throws IOException {
+            String lineEnd = "\r\n";
+            String twoHyphens = "--";
+            String boundary =  "*****";
+
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"" + dataName + "\""  + lineEnd);
+            outputStream.writeBytes(lineEnd);
+
+            outputStream.writeBytes(data);
+            outputStream.writeBytes(lineEnd);
         }
 
     }
