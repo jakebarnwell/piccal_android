@@ -96,9 +96,9 @@ public class PickCornersActivity extends AppCompatActivity {
 
     private double clamp(double x) {
         if(x < 0) {
-            return 0;
+            return 0.01;
         } else if(x > 1) {
-            return 1;
+            return .99;
         } else {
             return x;
         }
