@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Drag the four targets to point at the four corners of the poster."
+        android:text="Place the four targets on the matching corner points of the poster."
         android:id="@+id/tv_instructions"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
@@ -23,9 +23,10 @@
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:layout_centerHorizontal="true"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"/>
 
 
     <ImageView
@@ -89,8 +90,11 @@
         android:layout_height="wrap_content"
         android:text="Continue"
         android:id="@+id/btn_continue"
+        android:background="@drawable/orange_rounded_button"
+        android:textColor="#fffbf8"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
         android:onClick="onClick_confirm"
         />
 
