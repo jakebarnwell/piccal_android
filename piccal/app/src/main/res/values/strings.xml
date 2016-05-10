@@ -6,11 +6,12 @@
     <string name="upload_server">Upload</string>
     <string name="uploaded">Successfully uploaded</string>
     <string name="title_activity_camera_overlay">CameraOverlayActivity</string>
-    <string name="success_msg_textView">Success!\n\nEvent has been added to calendar!</string>
+    <string name="success_msg_textView">Event Added!</string>
     <string name="add_additional_event_button">Add Another Event</string>
     <string name="quit_button">Quit</string>
     <string name="view_event_button">View Event in Calendar</string>
     <string name="retake_photo">↺ Try Again</string>
     <string name="add_to_cal">Add Event ➡</string>
     <string name="textViewDate">Date:</string>
+    <string name="welcome_to_piccal">piccal</string>
 </resources>

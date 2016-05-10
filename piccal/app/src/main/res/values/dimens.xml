@@ -13,4 +13,6 @@
     <dimen name="corner_horiz_margin">-50dp</dimen>
     <dimen name="corner_vert_margin">-50dp</dimen>
 
+    <dimen name="edittext_width">250dp</dimen>
+
 </resources>

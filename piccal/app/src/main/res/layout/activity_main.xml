@@ -8,51 +8,42 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.mit.piccal.MainActivity"
-    android:background="@drawable/white_marble">
+    android:background="@drawable/yellow_background">
 
 
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Simply take a photo of a poster or flyer advertising an event, and we will add it to your calendar!"
-        android:id="@+id/textView"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="39dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Please ensure that Wi-Fi is enabled before continuing."
-        android:id="@+id/textView3"
-        android:textColor="#000000"
-        android:textStyle="bold"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="39dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Welcome to PicCal!"
-        android:id="@+id/textView2"
-        android:textColor="#000000"
-        android:textStyle="bold"
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_alignParentTop="true"
+        android:id="@+id/logo"
+        android:src="@drawable/piccal_icon_no_padding"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:textSize="24dp" />
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/welcome_to_piccal"
+        android:id="@+id/title"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/logo"
+        android:textSize="48dp"
+        android:layout_marginTop="-10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Take a Picture. Save to Calendar."
+        android:id="@+id/tv_instructions"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_below="@+id/title"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        android:layout_margin="10dp"/>
 
     <Button
         android:id="@+id/take_photo"
@@ -61,13 +52,27 @@
         android:text="@string/take_photo"
         android:textSize="22dp"
         android:textStyle="bold"
-        android:background="#73cfee"
+        android:textColor="#fffbf8"
+        android:background="@drawable/orange_rounded_button"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:layout_below="@+id/textView3"
+        android:layout_below="@+id/tv_instructions"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="39dp"
+        android:layout_margin="30dp"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Please ensure that Wi-Fi is enabled before continuing."
+        android:id="@+id/tv_wifi"
+        android:textColor="#000000"
+        android:textStyle="italic"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        />
+
 
 
 </RelativeLayout>

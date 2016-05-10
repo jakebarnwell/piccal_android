@@ -16,12 +16,14 @@ import android.os.Environment;
 import android.provider.CalendarContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -49,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Set Title to be colored:
+        String t = "<font color=\"#5B9BD5\">pi</font><font color=\"#FF0000\">cc</font><font color=\"#5B9BD5\">al</font>";
+        ((TextView)findViewById(R.id.title)).setText(Html.fromHtml(t));
 
         mTakePhoto = (Button) findViewById(R.id.take_photo);
         mTakePhoto.setOnClickListener(this);
